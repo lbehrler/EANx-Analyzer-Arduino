@@ -1,5 +1,5 @@
 
-// Test Software O2 Meter 
+// Test Software EANx Analysis
 // #include <Wire.h>
 #include <SPI.h>
 #include <Adafruit_GFX.h>    // Core graphics library
@@ -11,6 +11,7 @@
 #define TFT_CS  4
 #define TFT_RST 3 // Or set to -1 and connect to Arduino RESET pin
 #define TFT_DC  2
+#define TFT_BL  5
 
 
 // OPTION 1 (recommended) is to use the HARDWARE SPI pins 
