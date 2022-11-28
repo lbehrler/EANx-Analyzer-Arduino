@@ -1,22 +1,57 @@
+/*
+  EANx Analysis with output to an OLED color display
 
-// Test Software EANx Analysis
-// #include <Wire.h>
+  Reads an analog input on pin, converts it to voltage, and prints the result to the display and debug to Serial Monitor.
+
+  Based on ReadAnalogVoltage script and GFX scripts
+*/
+// Libraries 
 #include <SPI.h>
 #include <Adafruit_GFX.h>    // Core graphics library
 #include <Adafruit_ST7789.h> // Hardware-specific library for ST7789
 
+// Chip Specific settings 
+#if defined(ARDUINO_FEATHER_ESP32) // Feather Huzzah32
+  #define TFT_CS         14
+  #define TFT_RST        15
+  #define TFT_DC         32
 
+#elif defined(ESP8266)
+  #define TFT_CS         4
+  #define TFT_RST        16                                            
+  #define TFT_DC         5
 
-// Definitions and Pin Constants for the Seed XAIO
-#define TFT_CS  4
-#define TFT_RST 3 // Or set to -1 and connect to Arduino RESET pin
-#define TFT_DC  2
-#define TFT_BL  5
+#elif defined(SEEED_XIAO_M0)  // Seeed XAIO
+  #define TFT_CS        4
+  #define TFT_RST       3     // Or set to -1 and connect to Arduino RESET pin
+  #define TFT_DC        2
+  #define TFT_MOSI      10    // Data out
+  #define TFT_SCLK      8     // Clock out
+  #define ADCPIN        0
+
+#elif defined(ARDUINO_ESP32_PICO)
+  #define TFT_SCL       22
+  #define TFT_SDA       21    
+  #define TFT_MOSI      23    // Data out
+  #define TFT_SCLK      18    // Clock out  #define 
+  #define TFT_RST       5                                            
+  #define TFT_DC        10
+  #define TFT_CS        9
+  #define ADCPIN        36  
+
+#else
+  // For the breakout board, you can use any 2 or 3 pins.
+  // These pins will also work for the 1.8" TFT shield.
+  #define TFT_CS        10
+  #define TFT_RST       9 // Or set to -1 and connect to Arduino RESET pin
+  #define TFT_DC        8
+  #define ADCPIN        0
+#endif
 
 
 // OPTION 1 (recommended) is to use the HARDWARE SPI pins 
-#define TFT_MOSI 10  // Data out
-#define TFT_SCLK  8  // Clock out
+//#define TFT_MOSI 10  // Data out
+//#define TFT_SCLK  8  // Clock out
 Adafruit_ST7789 tft = Adafruit_ST7789(TFT_CS, TFT_DC, TFT_MOSI, TFT_SCLK, TFT_RST);
 
 
@@ -27,30 +62,17 @@ Adafruit_ST7789 tft = Adafruit_ST7789(TFT_CS, TFT_DC, TFT_MOSI, TFT_SCLK, TFT_RS
 //Adafruit_ST7789 tft = Adafruit_ST7789(TFT_CS, TFT_DC, TFT_SDA, TFT_SCL, TFT_RST);
 
 
-
-
-
-
-/*
-  ReadAnalogVoltage
-
-  Reads an analog input on pin 0, converts it to voltage, and prints the result to the Serial Monitor.
-  Graphical representation is available using Serial Plotter (Tools > Serial Plotter menu).
-  Attach the center pin of a potentiometer to pin A0, and the outside pins to +5V and ground.
-
-  This example code is in the public domain.
-
-  https://www.arduino.cc/en/Tutorial/BuiltInExamples/ReadAnalogVoltage
-*/
 float p = 3.1415926;
+
+
 // the setup routine runs once when you press reset:
 void setup() {
   // initialize serial communication at 9600 bits per second:
-  Serial.begin(9600);
+  Serial.begin(19200);
   Serial.print(F("Hello! Analog Voltage - ST77xx TFT Test"));
 
   // Seeed Digit Write 
-  pinMode (1, OUTPUT);
+  //pinMode (1, OUTPUT);
 
   // Use this initializer (uncomment) if using a 1.3" or 1.54" 240x240 TFT:
   tft.init(240, 240);           // Init ST7789 240x240
@@ -82,6 +104,7 @@ void setup() {
 
   Serial.println(time, DEC);
   delay(500);
+
 /*
   // large block of text
   tft.fillScreen(ST77XX_BLACK);
@@ -126,7 +149,7 @@ void setup() {
  // delay(500);
 
   tft.fillScreen(ST77XX_BLUE);
-  tft.setTextSize(4); 
+  tft.setTextSize(3); 
   Serial.println("init test done");
   tft.println("init test done");
   delay(1000);
@@ -137,31 +160,39 @@ void setup() {
 // the loop routine runs over and over again forever:
 void loop() {
   // read the input on analog pin 0:
-  digitalWrite (1, HIGH);
+  //digitalWrite (1, HIGH);
   //int sensorValue = analogRead(0);
  
-  digitalWrite (1, LOW);
-  int sensorValue = analogRead(0);
-  // Convert the analog reading (which goes from 0 - 1023) to a voltage (0 - 5V):
-  float voltage = sensorValue * (5 / 1023.0);
+  //digitalWrite (1, LOW);
+  
+  // get value from ADC input Pin
+  int sensorValue = analogRead(ADCPIN);   
+  // Convert the analog reading to voltage (which goes from 0 - 1023) Seeed XIAO
+  // Convert the analog reading to voltage (which goes from 0 - 4095) ESP32
+ 
+  float voltage = ((sensorValue * 3.3) / 4095);
 
-// print out the value you read:
-  //Serial.println(voltage);
-  Serial.println(sensorValue);
+  // DEBUG print out the value you read:
+  Serial.print("ADC Value = ");
+  Serial.print(sensorValue);
+  Serial.print("  ");
+  Serial.print("Voltage = ");
+  Serial.print(voltage);
+  Serial.println(" V");
+
   tft.setCursor(20, 30);
   tft.setTextColor(ST77XX_RED, ST77XX_BLACK);
-  tft.setTextSize(9);
+  tft.setTextSize(8);
   tft.println(voltage,1);
   tft.setCursor(40, 120);
-  tft.setTextColor(ST77XX_YELLOW, ST77XX_BLACK);
+  tft.setTextColor(ST77XX_BLUE, ST77XX_BLACK);
   tft.setTextSize(6);
   tft.println(sensorValue);
-
-//  tft.invertDisplay(true);
-//  delay(100);
-//  tft.invertDisplay(false);
-//  delay(100);
-//  tft.fillScreen(ST77XX_BLACK); 
+  //  tft.invertDisplay(true);
+  //  delay(100);
+  //  tft.invertDisplay(false);
+  //  delay(100);
+  //  tft.fillScreen(ST77XX_BLACK); 
 }
 
 void testlines(uint16_t color) {
