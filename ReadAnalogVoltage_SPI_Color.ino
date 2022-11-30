@@ -1,16 +1,22 @@
-/*
+
+/*****************************************************************************
+
   EANx Analysis with output to an OLED color display
 
-  Reads an analog input on pin, converts it to voltage, and prints the result to the display and debug to Serial Monitor.
+  Reads an analog input on pin, converts it to voltage, grabs a running average 
+  of ADC values and and prints the result to the display and debug to Serial Monitor.
 
-  Based on ReadAnalogVoltage script and GFX scripts
-*/
+  Based on ReadAnalogVoltage script and GFX demo scripts
+*****************************************************************************/
+
 // Libraries 
+#include <RunningAverage.h>
 #include <SPI.h>
 #include <Adafruit_GFX.h>    // Core graphics library
 #include <Adafruit_ST7789.h> // Hardware-specific library for ST7789
+#include <u8g2>
 
-// Chip Specific settings 
+// Chip Specific settings for SPI OLED 
 #if defined(ARDUINO_FEATHER_ESP32) // Feather Huzzah32
   #define TFT_CS         14
   #define TFT_RST        15
@@ -49,30 +55,21 @@
 #endif
 
 
-// OPTION 1 (recommended) is to use the HARDWARE SPI pins 
-//#define TFT_MOSI 10  // Data out
-//#define TFT_SCLK  8  // Clock out
 Adafruit_ST7789 tft = Adafruit_ST7789(TFT_CS, TFT_DC, TFT_MOSI, TFT_SCLK, TFT_RST);
 
 
-// OPTION 2 lets you interface the display using ANY TWO or THREE PINS, (Seeed XAIO SDA / SCL)
-// tradeoff being that performance is not as fast as hardware SPI above.
-//#define TFT_SCL 5
-//#define TFT_SDA 4
-//Adafruit_ST7789 tft = Adafruit_ST7789(TFT_CS, TFT_DC, TFT_SDA, TFT_SCL, TFT_RST);
+// Global Variabls
+#define RA_SIZE 20            //Define running average pool size
+RunningAverage RA(RA_SIZE);   //Initialize Running Average
 
+int prevaveSensorValue = 0;         
+int aveSensorValue = 0;
+float prevvoltage = 0;
+float voltage = 0;
 
-float p = 3.1415926;
-
-
-// the setup routine runs once when you press reset:
 void setup() {
   // initialize serial communication at 9600 bits per second:
   Serial.begin(19200);
-  Serial.print(F("Hello! Analog Voltage - ST77xx TFT Test"));
-
-  // Seeed Digit Write 
-  //pinMode (1, OUTPUT);
 
   // Use this initializer (uncomment) if using a 1.3" or 1.54" 240x240 TFT:
   tft.init(240, 240);           // Init ST7789 240x240
@@ -106,19 +103,6 @@ void setup() {
   delay(500);
 
 /*
-  // large block of text
-  tft.fillScreen(ST77XX_BLACK);
-  tft.setTextSize(1);
-  testdrawtext("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur adipiscing ante sed nibh tincidunt feugiat. Maecenas enim massa, fringilla sed malesuada et, malesuada sit amet turpis. Sed porttitor neque ut ante pretium vitae malesuada nunc bibendum. Nullam aliquet ultrices massa eu hendrerit. Ut sed nisi lorem. In vestibulum purus a tortor imperdiet posuere. ", ST77XX_WHITE);
-  delay(1000);
-
-  // tft print function!
-  tftPrintTest();
-  delay(4000);
-
-  // a single pixel
-  tft.drawPixel(tft.width()/2, tft.height()/2, ST77XX_GREEN);
-  delay(500);
 
   // line draw test
   testlines(ST77XX_YELLOW);
@@ -130,69 +114,141 @@ void setup() {
 
   testdrawrects(ST77XX_GREEN);
   delay(500);
-
-  testfillrects(ST77XX_YELLOW, ST77XX_MAGENTA);
-  delay(500);
 */
+  //testfillrects(ST77XX_YELLOW, ST77XX_MAGENTA);
+  //delay(500);
+
   tft.fillScreen(ST77XX_BLACK);
   testfillcircles(10, ST77XX_BLUE);
   testdrawcircles(10, ST77XX_WHITE);
   delay(500);
 
-  testroundrects();
-  delay(500);
+//  testroundrects();
+//  delay(500);
 
 //  testtriangles();
 //  delay(500);
 
- // mediabuttons();
- // delay(500);
-
-  tft.fillScreen(ST77XX_BLUE);
-  tft.setTextSize(3); 
+  tft.fillScreen(ST77XX_GREEN);
+  tft.setTextSize(4); 
+  tft.setTextColor(ST77XX_BLACK);
   Serial.println("init test done");
-  tft.println("init test done");
+  tft.println("init");
+  tft.println("complete");
   delay(1000);
   tft.fillScreen(ST77XX_BLACK);  
-  tft.setTextColor(ST77XX_RED, ST77XX_BLACK);
+
+  
+  displaycalibration();
+  printLayout();
+  //canvas.setCursor(5, 5);
+  //canvas.setTextColor(ST77XX_YELLOW, ST77XX_BLACK);
+ // canvas.setTextSize(5);
+ // canvas.println(aveSensorValue);
+ // tft.drawBitmap(40, 120, canvas.getBuffer(), 128, 64, ST77XX_BLUE, ST77XX_BLACK); // Copy to screen
 }
 
 // the loop routine runs over and over again forever:
 void loop() {
-  // read the input on analog pin 0:
-  //digitalWrite (1, HIGH);
-  //int sensorValue = analogRead(0);
- 
-  //digitalWrite (1, LOW);
-  
-  // get value from ADC input Pin
-  int sensorValue = analogRead(ADCPIN);   
-  // Convert the analog reading to voltage (which goes from 0 - 1023) Seeed XIAO
-  // Convert the analog reading to voltage (which goes from 0 - 4095) ESP32
- 
-  float voltage = ((sensorValue * 3.3) / 4095);
+
+  // get running average value from ADC input Pin
+  RA.clear();
+  for (int x=0; x<= RA_SIZE; x++) {
+    int sensorValue = 0;
+    sensorValue = analogRead(ADCPIN);
+    RA.addValue(sensorValue);
+    delay(16);
+    Serial.println(sensorValue);    //mV serial print for debugging
+  } 
+
+  // Record old and new ADC values 
+  prevaveSensorValue = aveSensorValue;
+  prevvoltage = voltage;
+  aveSensorValue = RA.getAverage();
+
+  // Convert the analog reading to voltage (0 - 1023) Seeed XIAO (0 - 4095) ESP32
+
+  voltage = ((aveSensorValue * 3.3) / 4095);
 
   // DEBUG print out the value you read:
   Serial.print("ADC Value = ");
-  Serial.print(sensorValue);
+  Serial.print(aveSensorValue);
   Serial.print("  ");
   Serial.print("Voltage = ");
   Serial.print(voltage);
   Serial.println(" V");
 
-  tft.setCursor(20, 30);
-  tft.setTextColor(ST77XX_RED, ST77XX_BLACK);
-  tft.setTextSize(8);
-  tft.println(voltage,1);
-  tft.setCursor(40, 120);
-  tft.setTextColor(ST77XX_BLUE, ST77XX_BLACK);
+  // Display values on OLED 
+  if( prevvoltage!=voltage)
+  {
+    deleteVoltage();
+    printVoltage();
+  }
+
+  if( prevaveSensorValue!=aveSensorValue)
+  {
+    deleteSensorValue();
+    printSensorValue();
+  }
+ 
+
+
+
+
+}
+/*************************************************************************************************************************************************************/
+void displaycalibration() {
+   //display "Calibrating"
+   tft.fillScreen(ST77XX_BLACK);
+   tft.setTextColor(ST77XX_WHITE);
+   tft.setTextSize(3);
+   tft.setCursor(10,10);
+   tft.println(F("+++++++++++"));
+   tft.println(F(" START-UP"));
+   tft.println(F("CALIBRATION"));
+   tft.println(F("+++++++++++"));
+   delay(500);
+   tft.fillScreen(ST77XX_BLACK);
+}
+
+void printSensorValue()
+{
+  tft.setCursor(60, 140);
+  tft.setTextSize(4);
+  tft.setTextColor(ST77XX_BLUE);
+  tft.println(aveSensorValue);
+}
+
+void deleteSensorValue()
+{
+  tft.setCursor(60, 140);
+  tft.setTextSize(4);
+  tft.setTextColor(ST77XX_BLACK);
+  tft.println(prevaveSensorValue);
+}
+
+void printVoltage()
+{
+  tft.setCursor(40, 60);
   tft.setTextSize(6);
-  tft.println(sensorValue);
-  //  tft.invertDisplay(true);
-  //  delay(100);
-  //  tft.invertDisplay(false);
-  //  delay(100);
-  //  tft.fillScreen(ST77XX_BLACK); 
+  tft.setTextColor(ST77XX_RED);
+  tft.println(voltage,1);
+}
+
+void deleteVoltage()
+{
+  tft.setCursor(40, 60);
+  tft.setTextSize(6);
+  tft.setTextColor(ST77XX_BLACK);
+  tft.println(prevvoltage,1);
+}
+
+void printLayout()
+{
+  tft.setCursor(10, 5);
+  tft.setTextSize(4);
+  tft.setTextColor(ST77XX_GREEN);
+  tft.println("Voltage");
 }
 
 void testlines(uint16_t color) {
@@ -324,62 +380,3 @@ void testroundrects() {
   }
 }
 
-void tftPrintTest() {
-  tft.setTextWrap(false);
-  tft.fillScreen(ST77XX_BLACK);
-  tft.setCursor(0, 30);
-  tft.setTextColor(ST77XX_RED);
-  tft.setTextSize(1);
-  tft.println("Hello World!");
-  tft.setTextColor(ST77XX_YELLOW);
-  tft.setTextSize(2);
-  tft.println("Hello World!");
-  tft.setTextColor(ST77XX_GREEN);
-  tft.setTextSize(3);
-  tft.println("Hello World!");
-  tft.setTextColor(ST77XX_BLUE);
-  tft.setTextSize(4);
-  tft.print(1234.567);
-  delay(1500);
-  tft.setCursor(0, 0);
-  tft.fillScreen(ST77XX_BLACK);
-  tft.setTextColor(ST77XX_WHITE);
-  tft.setTextSize(1);
-  tft.println("Hello World!");
-  tft.setTextSize(2);
-  tft.setTextColor(ST77XX_GREEN);
-  tft.print(p, 6);
-  tft.println(" Want pi?");
-  tft.println(" ");
-  tft.print(8675309, HEX); // print 8,675,309 out in HEX!
-  tft.println(" Print HEX!");
-  tft.println(" ");
-  tft.setTextColor(ST77XX_WHITE);
-  tft.println("Sketch has been");
-  tft.println("running for: ");
-  tft.setTextColor(ST77XX_MAGENTA);
-  tft.print(millis() / 1000);
-  tft.setTextColor(ST77XX_WHITE);
-  tft.print(" seconds.");
-}
-
-void mediabuttons() {
-  // play
-  tft.fillScreen(ST77XX_BLACK);
-  tft.fillRoundRect(25, 10, 78, 60, 8, ST77XX_WHITE);
-  tft.fillTriangle(42, 20, 42, 60, 90, 40, ST77XX_RED);
-  delay(500);
-  // pause
-  tft.fillRoundRect(25, 90, 78, 60, 8, ST77XX_WHITE);
-  tft.fillRoundRect(39, 98, 20, 45, 5, ST77XX_GREEN);
-  tft.fillRoundRect(69, 98, 20, 45, 5, ST77XX_GREEN);
-  delay(500);
-  // play color
-  tft.fillTriangle(42, 20, 42, 60, 90, 40, ST77XX_BLUE);
-  delay(50);
-  // pause color
-  tft.fillRoundRect(39, 98, 20, 45, 5, ST77XX_RED);
-  tft.fillRoundRect(69, 98, 20, 45, 5, ST77XX_RED);
-  // play color
-  tft.fillTriangle(42, 20, 42, 60, 90, 40, ST77XX_GREEN);
-}
