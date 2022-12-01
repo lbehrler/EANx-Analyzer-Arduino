@@ -31,9 +31,9 @@
   #define TFT_DC         5
 
 #elif defined(SEEED_XIAO_M0)  // Seeed XAIO
-  #define TFT_CS        4
-  #define TFT_RST       3     // Or set to -1 and connect to Arduino RESET pin
-  #define TFT_DC        2
+  #define TFT_CS        6
+  #define TFT_RST       2     // Or set to -1 and connect to Arduino RESET pin
+  #define TFT_DC        7
   #define TFT_MOSI      10    // Data out
   #define TFT_SCLK      8     // Clock out
   #define ADCPIN0       0
@@ -292,15 +292,15 @@ void o2calibration()
 
 void printSensorValue()
 {
-  tft.setCursor(150, 180);
+  tft.setCursor(130, 165);
   tft.setTextSize(2);
-  tft.setTextColor(ST77XX_BLUE);
+  tft.setTextColor(ST77XX_YELLOW);
   tft.println(aveSensorValue);
 }
 
 void deleteSensorValue()
 {
-  tft.setCursor(150, 180);
+  tft.setCursor(130, 165);
   tft.setTextSize(2);
   tft.setTextColor(ST77XX_BLACK);
   tft.println(prevaveSensorValue);
@@ -308,7 +308,7 @@ void deleteSensorValue()
 
 void printVoltage()
 {
-  tft.setCursor(40, 170);
+  tft.setCursor(30, 160);
   tft.setTextSize(4);
   tft.setTextColor(ST77XX_RED);
   tft.println(voltage,1);
@@ -316,7 +316,7 @@ void printVoltage()
 
 void deleteVoltage()
 {
-  tft.setCursor(40, 170);
+  tft.setCursor(30, 160);
   tft.setTextSize(4);
   tft.setTextColor(ST77XX_BLACK);
   tft.println(prevvoltage,1);
@@ -326,7 +326,9 @@ void printo2()
 {
   tft.setCursor(40, 50);
   tft.setTextSize(6);
-  tft.setTextColor(ST77XX_YELLOW);
+  if(currentO2>20 and currentO2<22) {  tft.setTextColor(ST77XX_CYAN);}
+  if(currentO2<20) {  tft.setTextColor(ST77XX_RED);}
+  if(currentO2>22) {  tft.setTextColor(ST77XX_GREEN);}
   tft.println(currentO2,1);
 }
 
@@ -340,13 +342,16 @@ void deleteo2()
 
 void printLayout()
 {
-  tft.setCursor(40, 5);
+  tft.setCursor(50, 5);
   tft.setTextSize(4);
   tft.setTextColor(ST77XX_GREEN);
   tft.println("O2 %");
-  tft.setCursor(20, 130);
+  tft.setCursor(30, 120);
   tft.setTextSize(4);
-  tft.println("Volts mV");
+  tft.setTextColor(ST77XX_BLUE);
+  tft.print("mV");
+  tft.setTextColor(ST77XX_ORANGE);
+  tft.println("  Raw");
 }
 
 void testfillcircles(uint8_t radius, uint16_t color) {
