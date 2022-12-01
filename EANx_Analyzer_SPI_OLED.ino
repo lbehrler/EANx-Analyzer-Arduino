@@ -15,7 +15,7 @@
 #include <RunningAverage.h>
 #include <SPI.h>
 #include <Adafruit_GFX.h>    // Core graphics library
-#include <Adafruit_ST1306.h> // Hardware-specific library for ST1306
+#include <Adafruit_ST7789.h> // Hardware-specific library for ST1306
 #include <Adafruit_ADS1X15.h>  
 
 
