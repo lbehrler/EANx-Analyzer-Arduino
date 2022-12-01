@@ -154,7 +154,6 @@ void setup() {
   // setup display and calibrate unit
   o2calibration();
 
-
   tft.fillScreen(ST77XX_BLACK);
 
   printLayout();
@@ -190,6 +189,11 @@ void loop() {
   // Check that the ADC is operational 
   if (!ads.begin()) {
     Serial.println("Failed to initialize ADS.");
+    tft.setCursor(0,30);
+    tft.setTextSize(4);
+    tft.setTextColor(ST77XX_RED);
+    tft.println(F("Error"));
+    tft.println(F("No Init"));
     while (1);
   }
 
@@ -215,7 +219,7 @@ void loop() {
   prevvoltage = voltage;
   aveSensorValue = RA.getAverage();
 
-  currentO2 = ((aveSensorValue * calFactor) * 20.9);  // Units: pct
+  currentO2 = (aveSensorValue * calFactor);  // Units: pct
   if (aveSensorValue > 99.9) currentO2 = 99.9;
 
   voltage = (aveSensorValue * multiplier);  // Units: mV
@@ -263,13 +267,17 @@ void o2calibration()
   tft.fillScreen(ST77XX_BLACK);
   tft.setTextColor(ST77XX_WHITE);
   tft.setTextSize(4);
-  tft.setCursor(10,10);
-  tft.println(F("+++++++++"));
-  tft.setTextSize(4);
+  tft.setCursor(0,10);
+  tft.println(F("++++++++++"));
+  tft.println();
+  tft.setTextSize(3);
   tft.println(F("Calibrating"));
+  tft.println();
   tft.setTextSize(4);
   tft.println(F("O2 Sensor"));
+  tft.println();
   tft.println(F("++++++++++"));
+  Serial.println("Calibration Screen Text");
 
   //                                                                ADS1015  ADS1115
   //                                                                -------  -------
@@ -285,11 +293,18 @@ void o2calibration()
   float multiplier = 0.1875F / 2; /* ADS1115  @ +/- 6.144V gain (16-bit results) */
 
   // Check that the ADC is operational 
-  if (!ads.begin()) {
+  if (!ads.begin()) 
+  {
+    tft.fillScreen(ST77XX_RED);
+    tft.setCursor(0,30);
+    tft.setTextSize(4);
+    tft.setTextColor(ST77XX_BLACK);
+    tft.println("Err");
+    tft.println("No Init");
     Serial.println("Failed to initialize ADS.");
     while (1);
   }
-
+  Serial.println("Post ADS check statement");
   // get running average value from ADC input Pin
   RA.clear();
   for (int x=0; x<= (RA_SIZE*5); x++) {
@@ -297,10 +312,11 @@ void o2calibration()
     sensorValue = ads.readADC_Differential_0_1();
     RA.addValue(sensorValue);
     delay(16);
-    // Serial.println(sensorValue);    //mV serial print for debugging
+    Serial.print("calibrating ");
+    Serial.println(sensorValue);    //mV serial print for debugging
   } 
 
-  calFactor = (1 / RA.getAverage());  // Auto Calibrate to 20.9%
+  calFactor = (1 / RA.getAverage()*20.900);  // Auto Calibrate to 20.9%
 
   
 
