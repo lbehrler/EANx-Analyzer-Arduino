@@ -32,9 +32,6 @@ Some of this code is adapted from other EANx project scripts:
 + O2 Sensor
 + Project case
 
-*Schematic Arduino Nano version with SPI OLED:*
-![](https://github.com/lbehrler/EANx-Analyzer/blob/eef317a30d3a1932c77d38c698fbaf5213d5280e/EANx_Analyzer_SPI_OLED%20schematic.png)
-
 ## Project Files
 
 The project folder contains several files and one folder:
@@ -65,4 +62,10 @@ Future text
 ## Revision History
 + 11/29/2022 - initial release
 
+## Schematics 
 
+*Seeeduino Xiao version with SPI OLED:*
+![](https://github.com/lbehrler/EANx-Analyzer/blob/645330fc3275fe3a1c8c88061cc2e68e7b1bfda9/Seeed_Xiao_EANx_Analyzer_SPI_OLED%20schematic.png)
+
+*Arduino Nano version with SPI OLED:*
+![](https://github.com/lbehrler/EANx-Analyzer/blob/645330fc3275fe3a1c8c88061cc2e68e7b1bfda9/Nano_EANx_Analyzer_SPI_OLED%20schematic.png)
