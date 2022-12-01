@@ -1,6 +1,3 @@
-
-
-
 /*****************************************************************************
 
   EANx Analysis with output to an OLED color display
@@ -8,7 +5,10 @@
   Reads an analog input on pin, converts it to voltage, grabs a running average 
   of ADC values and and prints the result to the display and debug to Serial Monitor.
 
-  Based on ReadAnalogVoltage script and GFX demo scripts
+  Based on prior EANx scripts: 
+  https://github.com/ppppaoppp/DIY-Nitrox-Analyzer-04_12_2019.git
+  https://github.com/ejlabs/arduino-nitrox-analyzer.git
+
 *****************************************************************************/
 
 // Libraries 
@@ -62,14 +62,23 @@
   #define ADCPIN1       3
 #endif
 
-Adafruit_ST7789 tft = Adafruit_ST7789(TFT_CS, TFT_DC, TFT_MOSI, TFT_SCLK, TFT_RST);
-// Adafruit_ADS1015 ads;     /* Use this for the 12-bit version */
-Adafruit_ADS1115 ads;  /* Use this for the 16-bit version */
+// OLED definitions
+#define SCREEN_WIDTH  240             // OLED display width, in pixels
+#define SCREEN_HEIGHT 240              // OLED display height, in pixels
+#define OLED_RESET     -1              // Reset pin # (or -1 if sharing Arduino reset pin)
 
-// Global Variabls
+// Adafruit_SSD1306 display(OLED_RESET); //Define OLED display
+
+
+Adafruit_ST7789 tft = Adafruit_ST7789(TFT_CS, TFT_DC, TFT_MOSI, TFT_SCLK, TFT_RST); //Define OLED display
+Adafruit_ADS1115 ads;  // Define ADC - 16-bit version 
+
+// Running Average definitions
 #define RA_SIZE 20            //Define running average pool size
 RunningAverage RA(RA_SIZE);   //Initialize Running Average
   
+
+// Global Variabls 
 float prevaveSensorValue = 0;         
 float aveSensorValue = 0;
 float prevvoltage = 0;
@@ -82,23 +91,8 @@ void setup() {
   // initialize serial communication at 9600 bits per second:
   Serial.begin(19200);
 
-  // Use this initializer (uncomment) if using a 1.3" or 1.54" 240x240 TFT:
-  tft.init(240, 240);           // Init ST7789 240x240
+  tft.init(SCREEN_WIDTH, SCREEN_HEIGHT);           // Init ST7789 240x240
 
-  // OR use this initializer (uncomment) if using a 1.69" 280x240 TFT:
-  //tft.init(240, 280);           // Init ST7789 280x240
-
-  // OR use this initializer (uncomment) if using a 2.0" 320x240 TFT:
-  //tft.init(240, 320);           // Init ST7789 320x240
-
-  // OR use this initializer (uncomment) if using a 1.14" 240x135 TFT:
-  //tft.init(135, 240);           // Init ST7789 240x135
-  
-  // OR use this initializer (uncomment) if using a 1.47" 172x320 TFT:
-  //tft.init(172, 320);           // Init ST7789 172x320
-
-  // OR use this initializer (uncomment) if using a 1.9" 170x320 TFT:
-  //tft.init(170, 320);           // Init ST7789 170x320
 
   // SPI speed defaults to SPI_DEFAULT_FREQ defined in the library, you can override it here
   // Note that speed allowable depends on chip and quality of wiring, if you go too fast, you
@@ -111,51 +105,25 @@ void setup() {
   tft.fillScreen(ST77XX_BLACK);
   time = millis() - time;
 
-  Serial.println(time, DEC);
-  delay(500);
-
-/*
-
-  // line draw test
-  testlines(ST77XX_YELLOW);
-  delay(500);
-
-  // optimized lines
-  testfastlines(ST77XX_RED, ST77XX_BLUE);
-  delay(500);
-
-  testdrawrects(ST77XX_GREEN);
-  delay(500);
-*/
-  //testfillrects(ST77XX_YELLOW, ST77XX_MAGENTA);
-  //delay(500);
-
   tft.fillScreen(ST77XX_BLACK);
   testfillcircles(10, ST77XX_BLUE);
   testdrawcircles(10, ST77XX_WHITE);
   delay(500);
 
-//  testroundrects();
-//  delay(500);
-
-//  testtriangles();
-//  delay(500);
 
   tft.fillScreen(ST77XX_GREEN);
   tft.setTextSize(4); 
   tft.setTextColor(ST77XX_BLACK);
-  Serial.println("init test done");
+  Serial.println("init display test done");
   tft.println("init");
+  tft.println("display");
   tft.println("complete");
-  delay(700);
+  delay(500);
   tft.fillScreen(ST77XX_BLACK);  
   
 
   // setup display and calibrate unit
   o2calibration();
-
-  tft.fillScreen(ST77XX_BLACK);
-
   printLayout();
 
 
@@ -184,7 +152,7 @@ void loop() {
 
   /* Be sure to update this value based on the IC and the gain settings! */
   //float   multiplier = 3.0F;    /* ADS1015 @ +/- 6.144V gain (12-bit results) */
-  float multiplier = 0.1875F / 2; /* ADS1115  @ +/- 6.144V gain (16-bit results) */
+  float multiplier = 0.0625; /* ADS1115  @ +/- 6.144V gain (16-bit results) */
 
   // Check that the ADC is operational 
   if (!ads.begin()) {
@@ -290,7 +258,7 @@ void o2calibration()
 
   /* Be sure to update this value based on the IC and the gain settings! */
   //float   multiplier = 3.0F;    /* ADS1015 @ +/- 6.144V gain (12-bit results) */
-  float multiplier = 0.1875F / 2; /* ADS1115  @ +/- 6.144V gain (16-bit results) */
+  float multiplier =  0.0625; /* 0.1875F / 2; /* ADS1115  @ +/- 6.144V gain (16-bit results) */
 
   // Check that the ADC is operational 
   if (!ads.begin()) 
@@ -300,7 +268,7 @@ void o2calibration()
     tft.setTextSize(4);
     tft.setTextColor(ST77XX_BLACK);
     tft.println("Err");
-    tft.println("No Init");
+    tft.println("No ADC Init");
     Serial.println("Failed to initialize ADS.");
     while (1);
   }
@@ -315,7 +283,7 @@ void o2calibration()
     Serial.print("calibrating ");
     Serial.println(sensorValue);    //mV serial print for debugging
   } 
-
+  tft.fillScreen(ST77XX_BLACK);
   calFactor = (1 / RA.getAverage()*20.900);  // Auto Calibrate to 20.9%
 
   
@@ -381,80 +349,6 @@ void printLayout()
   tft.println("Volts mV");
 }
 
-void testlines(uint16_t color) {
-  tft.fillScreen(ST77XX_BLACK);
-  for (int16_t x=0; x < tft.width(); x+=6) {
-    tft.drawLine(0, 0, x, tft.height()-1, color);
-    delay(0);
-  }
-  for (int16_t y=0; y < tft.height(); y+=6) {
-    tft.drawLine(0, 0, tft.width()-1, y, color);
-    delay(0);
-  }
-
-  tft.fillScreen(ST77XX_BLACK);
-  for (int16_t x=0; x < tft.width(); x+=6) {
-    tft.drawLine(tft.width()-1, 0, x, tft.height()-1, color);
-    delay(0);
-  }
-  for (int16_t y=0; y < tft.height(); y+=6) {
-    tft.drawLine(tft.width()-1, 0, 0, y, color);
-    delay(0);
-  }
-
-  tft.fillScreen(ST77XX_BLACK);
-  for (int16_t x=0; x < tft.width(); x+=6) {
-    tft.drawLine(0, tft.height()-1, x, 0, color);
-    delay(0);
-  }
-  for (int16_t y=0; y < tft.height(); y+=6) {
-    tft.drawLine(0, tft.height()-1, tft.width()-1, y, color);
-    delay(0);
-  }
-
-  tft.fillScreen(ST77XX_BLACK);
-  for (int16_t x=0; x < tft.width(); x+=6) {
-    tft.drawLine(tft.width()-1, tft.height()-1, x, 0, color);
-    delay(0);
-  }
-  for (int16_t y=0; y < tft.height(); y+=6) {
-    tft.drawLine(tft.width()-1, tft.height()-1, 0, y, color);
-    delay(0);
-  }
-}
-
-void testdrawtext(char *text, uint16_t color) {
-  tft.setCursor(0, 0);
-  tft.setTextColor(color);
-  tft.setTextWrap(true);
-  tft.print(text);
-}
-
-void testfastlines(uint16_t color1, uint16_t color2) {
-  tft.fillScreen(ST77XX_BLACK);
-  for (int16_t y=0; y < tft.height(); y+=5) {
-    tft.drawFastHLine(0, y, tft.width(), color1);
-  }
-  for (int16_t x=0; x < tft.width(); x+=5) {
-    tft.drawFastVLine(x, 0, tft.height(), color2);
-  }
-}
-
-void testdrawrects(uint16_t color) {
-  tft.fillScreen(ST77XX_BLACK);
-  for (int16_t x=0; x < tft.width(); x+=6) {
-    tft.drawRect(tft.width()/2 -x/2, tft.height()/2 -x/2 , x, x, color);
-  }
-}
-
-void testfillrects(uint16_t color1, uint16_t color2) {
-  tft.fillScreen(ST77XX_BLACK);
-  for (int16_t x=tft.width()-1; x > 6; x-=6) {
-    tft.fillRect(tft.width()/2 -x/2, tft.height()/2 -x/2 , x, x, color1);
-    tft.drawRect(tft.width()/2 -x/2, tft.height()/2 -x/2 , x, x, color2);
-  }
-}
-
 void testfillcircles(uint8_t radius, uint16_t color) {
   for (int16_t x=radius; x < tft.width(); x+=radius*2) {
     for (int16_t y=radius; y < tft.height(); y+=radius*2) {
@@ -470,43 +364,3 @@ void testdrawcircles(uint8_t radius, uint16_t color) {
     }
   }
 }
-
-void testtriangles() {
-  tft.fillScreen(ST77XX_BLACK);
-  uint16_t color = 0xF800;
-  int t;
-  int w = tft.width()/2;
-  int x = tft.height()-1;
-  int y = 0;
-  int z = tft.width();
-  for(t = 0 ; t <= 15; t++) {
-    tft.drawTriangle(w, y, y, x, z, x, color);
-    x-=4;
-    y+=4;
-    z-=4;
-    color+=100;
-  }
-}
-
-void testroundrects() {
-  tft.fillScreen(ST77XX_BLACK);
-  uint16_t color = 100;
-  int i;
-  int t;
-  for(t = 0 ; t <= 4; t+=1) {
-    int x = 0;
-    int y = 0;
-    int w = tft.width()-2;
-    int h = tft.height()-2;
-    for(i = 0 ; i <= 16; i+=1) {
-      tft.drawRoundRect(x, y, w, h, 5, color);
-      x+=2;
-      y+=3;
-      w-=4;
-      h-=6;
-      color+=1100;
-    }
-    color+=100;
-  }
-}
-
