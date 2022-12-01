@@ -92,7 +92,7 @@ void setup() {
   Serial.begin(19200);
 
   tft.init(SCREEN_WIDTH, SCREEN_HEIGHT);           // Init ST7789 240x240
-
+  tft.setRotation(2);   // Adjust SS7789 Orientation
 
   // SPI speed defaults to SPI_DEFAULT_FREQ defined in the library, you can override it here
   // Note that speed allowable depends on chip and quality of wiring, if you go too fast, you
