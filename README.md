@@ -54,7 +54,7 @@ Installing the scripts onto your project chipset can be done using Arduino IDE 2
 - Linux - 64 bits
 - Mac OS X - Version 10.14: "Mojave" or newer, 64 bits
 
-The [Arduino IDE 2.0 tutorial]([https://github.com/lbehrler/EANx-Analyzer/issues](https://docs.arduino.cc/software/ide-v2/tutorials/getting-started/ide-v2-downloading-and-installing))
+The [Arduino IDE 2.0 tutorial](https://docs.arduino.cc/software/ide-v2/tutorials/getting-started/ide-v2-downloading-and-installing)
 
 Alternately you can use esptools.py, Platform I/O or any number of script / binary installation managers. 
 
