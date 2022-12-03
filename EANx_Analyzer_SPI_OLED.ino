@@ -21,6 +21,7 @@
 #include <Adafruit_ADS1X15.h>  
 #include <Adafruit_SSD1306.h>
 #include <splash.h>
+// #include "pin_config.h"
 
 // Chip Specific settings for SPI OLED 
 #if defined(ARDUINO_FEATHER_ESP32) // Feather Huzzah32
@@ -55,6 +56,34 @@
   #define ADCPIN1       39
   #define ADCFACT       4095 
 
+#elif defined(ARDUINO_ESP32S3_DEV)
+  #define PIN_LCD_BL                   38
+  #define PIN_LCD_D0                   39
+  #define PIN_LCD_D1                   40
+  #define PIN_LCD_D2                   41
+  #define PIN_LCD_D3                   42
+  #define PIN_LCD_D4                   45
+  #define PIN_LCD_D5                   46
+  #define PIN_LCD_D6                   47
+  #define PIN_LCD_D7                   48
+  #define PIN_POWER_ON                 15
+  #define PIN_LCD_RES                  5
+  #define PIN_LCD_CS                   6
+  #define PIN_LCD_DC                   7
+  #define PIN_LCD_WR                   8
+  #define PIN_LCD_RD                   9
+  #define PIN_BUTTON_1                 0
+  #define PIN_BUTTON_2                 14
+  #define PIN_BAT_VOLT                 4
+  #define PIN_IIC_SCL                  17
+  #define PIN_IIC_SDA                  18
+  #define PIN_TOUCH_INT                16
+  #define PIN_TOUCH_RES                21
+  #define TFT_RES    5
+  #define TFT_CS     6
+  #define TFT_DC     7
+  #define TFT_SCL    17
+  #define TFT_SDA    18
 #else
   // For the breakout board, you can use any 2 or 3 pins.
   // These pins will also work for the 1.8" TFT shield.
@@ -66,7 +95,7 @@
 #endif
 
 // OLED definitions
-#define SCREEN_WIDTH  128             // OLED display width, in pixels
+#define SCREEN_WIDTH  128            // OLED display width, in pixels
 #define SCREEN_HEIGHT 32              // OLED display height, in pixels
 #define OLED_RESET     -1              // Reset pin # (or -1 if sharing Arduino reset pin)
 
@@ -89,6 +118,11 @@ float voltage = 0;
 float prevO2 = 0;
 float currentO2 = 0;
 float calFactor = 1;
+int modfsw = 0;
+int modmsw = 0;
+int prevmodfsw = 0;
+int prevmodmsw = 0;
+int modppo = 1.4;
 
 void setup() {
   // initialize serial communication at 9600 bits per second:
@@ -205,12 +239,17 @@ void loop() {
   prevaveSensorValue = aveSensorValue;
   prevO2 = currentO2;
   prevvoltage = voltage;
+  prevmodfsw = modfsw;
+  prevmodmsw = modmsw;
   aveSensorValue = RA.getAverage();
 
   currentO2 = (aveSensorValue * calFactor);  // Units: pct
   if (aveSensorValue > 99.9) currentO2 = 99.9;
 
   voltage = (aveSensorValue * multiplier);  // Units: mV
+
+  modfsw = 33 * (modppo / (currentO2 / 100) - 1);
+  modmsw =  10 * (modppo / (currentO2 / 100) - 1);
 
   // DEBUG print out the value you read:
   Serial.print("ADC Raw Diff = ");
@@ -222,7 +261,9 @@ void loop() {
   Serial.print("  ");
   Serial.print("O2 = ");
   Serial.print(currentO2);
-  Serial.println(" %");
+  Serial.print(" %");
+  Serial.print(modfsw);
+  Serial.println(" FT");
 
   // Display values on OLED 
   if( prevvoltage!=voltage)
@@ -237,12 +278,17 @@ void loop() {
     printo2();
   }
 
-  if( prevaveSensorValue!=aveSensorValue)
+//  if( prevaveSensorValue!=aveSensorValue)
+//  {
+//    deleteSensorValue();
+//    printSensorValue();
+//  }
+
+  if( prevmodfsw!=modfsw)
   {
-    deleteSensorValue();
-    printSensorValue();
+    deletemod();
+    printmod();
   }
- 
 
 
 
@@ -328,6 +374,30 @@ void deleteSensorValue()
   tft.println(prevaveSensorValue);
 }
 
+void printmod()
+{
+  tft.setCursor(130, 165);
+  tft.setTextSize(2);
+  tft.setTextColor(ST77XX_YELLOW);
+  tft.print(modfsw);
+  tft.print(" FT");
+  tft.setCursor(130, 185);
+  tft.print(modmsw);
+  tft.println(" m");
+}
+
+void deletemod()
+{
+  tft.setCursor(130, 165);
+  tft.setTextSize(2);
+  tft.setTextColor(ST77XX_BLACK);
+  tft.print(prevmodfsw);
+  tft.print(" FT");
+  tft.setCursor(130, 185);
+  tft.print(prevmodmsw);
+  tft.println(" m");
+}
+
 void printVoltage()
 {
   tft.setCursor(30, 160);
@@ -358,6 +428,7 @@ void printo2()
   display.setCursor(0,10);
   display.print("O2% ");
   display.setTextSize(3);
+  display.setCursor(45,5);
   display.println(currentO2,1);
   display.display();
   delay(500);
@@ -383,7 +454,7 @@ void printLayout()
   tft.setTextColor(ST77XX_BLUE);
   tft.print("mV");
   tft.setTextColor(ST77XX_ORANGE);
-  tft.println("  Raw");
+  tft.println("  MOD");
 }
 
 void initst1306()
