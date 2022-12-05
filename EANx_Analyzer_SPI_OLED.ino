@@ -122,19 +122,31 @@ int modfsw = 0;
 int modmsw = 0;
 int prevmodfsw = 0;
 int prevmodmsw = 0;
-int modppo = 1.4;
+float modppo = 1.4;
 
 void setup() {
   // initialize serial communication at 9600 bits per second:
   Serial.begin(19200);
 
-  initst7789();
   initst1306();
+  initst7789();
 
   // SPI speed defaults to SPI_DEFAULT_FREQ defined in the library, you can override it here
   // Note that speed allowable depends on chip and quality of wiring, if you go too fast, you
   // may end up with a black screen some times, or all the time.
   //tft.setSPISpeed(40000000);
+
+  display.clearDisplay();
+  display.display();
+
+  // Display Text
+  display.setTextSize(2);
+  display.setTextColor(WHITE);
+  display.setCursor(0,10);
+  display.println("Startup");
+  display.display();
+  delay(500);
+  display.clearDisplay();
 
   Serial.println("Display Initialized");
 
@@ -156,18 +168,6 @@ void setup() {
   tft.println("complete");
   delay(500);
   tft.fillScreen(ST77XX_BLACK);  
-
-  display.clearDisplay();
-  display.display();
-
-  // Display Text
-  display.setTextSize(2);
-  display.setTextColor(WHITE);
-  display.setCursor(0,10);
-  display.println("Intialized");
-  display.display();
-  delay(500);
-  display.clearDisplay();
   
   // setup display and calibrate unit
   o2calibration();
@@ -248,8 +248,8 @@ void loop() {
 
   voltage = (aveSensorValue * multiplier);  // Units: mV
 
-  modfsw = 33 * (modppo / (currentO2 / 100) - 1);
-  modmsw =  10 * (modppo / (currentO2 / 100) - 1);
+  modfsw =  33 * ((modppo / (currentO2 / 100)) - 1);
+  modmsw =  10 * ((modppo / (currentO2 / 100)) - 1);
 
   // DEBUG print out the value you read:
   Serial.print("ADC Raw Diff = ");
