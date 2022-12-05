@@ -17,9 +17,10 @@
 #include <RunningAverage.h>
 #include <SPI.h>
 #include <Adafruit_GFX.h>    // Core graphics library
-#include <Adafruit_ST7789.h> // Hardware-specific library for ST1306
+#include <Adafruit_ST7789.h> // Hardware-specific library for ST7789
+#include <Adafruit_ST7735.h> // Hardware-specific library for ST7789
 #include <Adafruit_ADS1X15.h>  
-#include <Adafruit_SSD1306.h>
+#include <Adafruit_SSD1306.h> // Hardware-specific library for ST1306
 #include <splash.h>
 // #include "pin_config.h"
 
@@ -84,6 +85,19 @@
   #define TFT_DC     7
   #define TFT_SCL    17
   #define TFT_SDA    18
+
+#elif defined(ARDUINO_AVR_NANO)
+  #define TFT_SDA       21     
+  #define TFT_SCL       22
+  #define TFT_MOSI      23    // Data out
+  #define TFT_SCLK      18    // Clock out  #define 
+  #define TFT_RST       5     // Or set to -1 and connect to Arduino RESET pin                                            
+  #define TFT_DC        10
+  #define TFT_CS        9
+  #define ADCPIN0       36
+  #define ADCPIN1       39
+  #define ADCFACT       4095 
+
 #else
   // For the breakout board, you can use any 2 or 3 pins.
   // These pins will also work for the 1.8" TFT shield.
@@ -94,10 +108,10 @@
   #define ADCPIN1       3
 #endif
 
-// OLED definitions
-#define SCREEN_WIDTH  128            // OLED display width, in pixels
+// ST1306 definitions
+#define SCREEN_WIDTH  128             // OLED display width, in pixels
 #define SCREEN_HEIGHT 32              // OLED display height, in pixels
-#define OLED_RESET     -1              // Reset pin # (or -1 if sharing Arduino reset pin)
+#define OLED_RESET     -1             // Reset pin # (or -1 if sharing Arduino reset pin)
 
 Adafruit_ST7789 tft = Adafruit_ST7789(TFT_CS, TFT_DC, TFT_MOSI, TFT_SCLK, TFT_RST); //Define OLED display
 
@@ -145,8 +159,6 @@ void setup() {
   display.setCursor(0,10);
   display.println("Startup");
   display.display();
-  delay(500);
-  display.clearDisplay();
 
   Serial.println("Display Initialized");
 
@@ -181,6 +193,7 @@ void setup() {
   display.display();
   delay(500);
   display.clearDisplay();
+  display.display();
 }
 
 
@@ -354,8 +367,6 @@ void o2calibration()
   tft.fillScreen(ST77XX_BLACK);
   calFactor = (1 / RA.getAverage()*20.900);  // Auto Calibrate to 20.9%
 
-  
-
 }
 
 void printSensorValue()
@@ -431,8 +442,6 @@ void printo2()
   display.setCursor(45,5);
   display.println(currentO2,1);
   display.display();
-  delay(500);
-  display.clearDisplay();
 }
 
 void deleteo2()
@@ -441,6 +450,8 @@ void deleteo2()
   tft.setTextSize(6);
   tft.setTextColor(ST77XX_BLACK);
   tft.println(prevO2,1);
+  display.clearDisplay();
+  display.display();
 }
 
 void printLayout()
@@ -474,7 +485,8 @@ void initst1306()
 
 void initst7789()
 {
-  tft.init(240, 240);           // Init ST7789 240x240
+  tft.init(240, 240);       // Init ST7789 240x240
+//  tft.init(128, 160);       // Init ST7735 128x160
   tft.setRotation(2);       // Adjust SS7789 Orientation
 }
 
@@ -514,9 +526,11 @@ void testscrolltext(void) {
   display.stopscroll();
   delay(500);
   display.startscrolldiagright(0x00, 0x07);
-  delay(2000);
+  delay(500);
   display.startscrolldiagleft(0x00, 0x07);
   delay(500);
   display.stopscroll();
   delay(500);
+  display.clearDisplay();
+  display.display();
 }
