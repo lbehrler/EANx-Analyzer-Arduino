@@ -1,4 +1,4 @@
-# EANx-Analyzer
+# EANx-Analyzer-Arduino / ESP32 
 
 > **Note:**: If you have an issue with this project, please review your hardware docuemntation first.  If you are still having an issue or have a software specific issue, please open an issue [here](https://github.com/lbehrler/EANx-Analyzer/issues).
 
@@ -19,15 +19,15 @@ Some of this code is adapted from other EANx project scripts:
 ## Required Components
 
 ### The Basic [monochrome] project:
-+ ESP32 or similar processor chip, with appropriate power supply
-+ Adafruit ADS1115 or equivelent 12 or 16 bit 
++ Arduino, ESP32 or similar processor chip, with appropriate power supply
++ Adafruit ADS1115 or equivelent 16 bit 
 + I2C or SPI Liquid-crystal display (LCD) ST1306 or u8g2 
 + O2 Sensor
 + Project case
 
 ### The more advanced project with a OLED color display:
-+ ESP32 or similar processor chip, with appropriate power supply
-+ Adafruit ADS1115 or equivelent 12 or 16 bit 
++ Arduino, ESP32 or similar processor chip, with appropriate power supply
++ Adafruit ADS1115 or equivelent 16 bit 
 + I2C or SPI Organic light-emitting diode (OLED) ST7789
 + O2 Sensor
 + Project case
@@ -38,7 +38,7 @@ The project folder contains several files and one folder:
 
 + `LICENSE` - The license file for this project
 + `readme.md` - This file.
-+ `EANx_Analizer.ino` - the basic application.
++ `EANx_Analizer_XXXXXXX.ino` - the basic application.
 
 ## Hardware Assembly
 Future text 
@@ -56,8 +56,9 @@ The [Arduino IDE 2.0 tutorial](https://docs.arduino.cc/software/ide-v2/tutorials
 Alternately you can use esptools.py, Platform I/O or any number of script / binary installation managers. 
 
 ## Configuration
-Future text 
+Depending on your hardware configuration and components used you will have to set your pin definitions in the header. 
 
+---More text coming soon---
 
 ## Revision History
 + 11/29/2022 - initial release
