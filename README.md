@@ -38,7 +38,7 @@ The project folder contains several files and one folder:
 
 + `LICENSE` - The license file for this project
 + `readme.md` - This file.
-+ `EANx_Analizer.ino` - the basic application.
++ `EANx_Analizer_XXXXXXX.ino` - the basic application.
 
 ## Hardware Assembly
 Future text 
@@ -56,8 +56,9 @@ The [Arduino IDE 2.0 tutorial](https://docs.arduino.cc/software/ide-v2/tutorials
 Alternately you can use esptools.py, Platform I/O or any number of script / binary installation managers. 
 
 ## Configuration
-Future text 
+Depending on your hardware configuration and components used you will have to set your pin definitions in the header. 
 
+---More text coming soon---
 
 ## Revision History
 + 11/29/2022 - initial release
