@@ -84,9 +84,6 @@
 
 Adafruit_ST7789 tft = Adafruit_ST7789(TFT_CS, TFT_DC, TFT_MOSI, TFT_SCLK, TFT_RST); //Define OLED display
 
-#define SCREEN_ADDRESS 0x3C ///< See datasheet for Address; 0x3D for 128x64, 0x3C for 128x32
-Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
-
 Adafruit_ADS1115 ads;  // Define ADC - 16-bit version 
 
 // Running Average definitions
@@ -112,15 +109,7 @@ void setup() {
   // initialize serial communication at 9600 bits per second:
   Serial.begin(19200);
 
-  initst1306();
   initst7789();
-
-  // Display Text
-  display.setTextSize(2);
-  display.setTextColor(WHITE);
-  display.setCursor(0,10);
-  display.println("Startup");
-  display.display();
 
   Serial.println("Display Initialized");
 
@@ -148,15 +137,6 @@ void setup() {
   o2calibration();
   printLayout();
 
-  // Display Text
-  display.setTextSize(2);
-  display.setTextColor(WHITE);
-  display.setCursor(0,10);
-  display.println("O2 Calibrated");
-  display.display();
-  delay(500);
-  display.clearDisplay();
-  display.display();
 }
 
 // the loop routine runs over and over again forever:
@@ -255,7 +235,6 @@ void o2calibration()
   tft.println(F("++++++++++"));
   Serial.println("Calibration Screen Text");
   
-  testscrolltext();
   initADC();
 
   Serial.println("Post ADS check statement");
@@ -338,15 +317,6 @@ void printo2()
   if(currentO2<20) {  tft.setTextColor(ST77XX_RED);}
   if(currentO2>22) {  tft.setTextColor(ST77XX_GREEN);}
   tft.println(currentO2,1);
-    // Display Text on ST1306
-  display.setTextSize(2);
-  display.setTextColor(WHITE);
-  display.setCursor(0,10);
-  display.print("O2% ");
-  display.setTextSize(3);
-  display.setCursor(45,5);
-  display.println(currentO2,1);
-  display.display();
 }
 
 void deleteo2()
@@ -355,8 +325,6 @@ void deleteo2()
   tft.setTextSize(6);
   tft.setTextColor(ST77XX_BLACK);
   tft.println(prevO2,1);
-  display.clearDisplay();
-  display.display();
 }
 
 void printLayout()
@@ -373,20 +341,6 @@ void printLayout()
   tft.println("  MOD");
 }
 
-void initst1306()
-{
-  // SSD1306_SWITCHCAPVCC = generate display voltage from 3.3V internally
-  if(!display.begin(SSD1306_SWITCHCAPVCC, SCREEN_ADDRESS)) {
-    Serial.println(F("SSD1306 allocation failed"));
-    for(;;); // Don't proceed, loop forever
-  }
-  // Show initial display buffer contents on the screen --
-  // the library initializes this with an Adafruit splash screen.
-  display.display();
-  // Clear the buffer
-  display.clearDisplay();
-  display.display();
-}
 
 void initst7789()
 {
@@ -425,11 +379,8 @@ float initADC()
     tft.println(F("No Init"));
     while (1);
   }
-
   return (multiplier);
 }
-
-
 
 void testfillcircles(uint8_t radius, uint16_t color) {
   for (int16_t x=radius; x < tft.width(); x+=radius*2) {
@@ -447,31 +398,3 @@ void testdrawcircles(uint8_t radius, uint16_t color) {
   }
 }
 
-void testscrolltext(void) {
-  display.clearDisplay();
-
-  display.setTextSize(2); // Draw 2X-scale text
-  display.setTextColor(SSD1306_WHITE);
-  display.setCursor(10, 0);
-  display.println(F("Calibrate O2"));
-  display.display();      // Show initial text
-  delay(100);
-
-  // Scroll in various directions, pausing in-between:
-  display.startscrollright(0x00, 0x0F);
-  delay(500);
-  display.stopscroll();
-  delay(500);
-  display.startscrollleft(0x00, 0x0F);
-  delay(500);
-  display.stopscroll();
-  delay(500);
-  display.startscrolldiagright(0x00, 0x07);
-  delay(500);
-  display.startscrolldiagleft(0x00, 0x07);
-  delay(500);
-  display.stopscroll();
-  delay(500);
-  display.clearDisplay();
-  display.display();
-}
