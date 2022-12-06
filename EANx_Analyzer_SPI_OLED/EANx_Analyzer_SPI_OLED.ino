@@ -17,7 +17,6 @@
 #include <Adafruit_GFX.h>    // Core graphics library
 #include <Adafruit_ST7789.h> // Hardware-specific library for ST7789
 #include <Adafruit_ADS1X15.h>  
-#include <Adafruit_SSD1306.h> // Hardware-specific library for ST1306
 #include <splash.h>
 // #include "pin_config.h"
 
@@ -113,10 +112,6 @@ void setup() {
 
   Serial.println("Display Initialized");
 
-  uint16_t time = millis();
-  tft.fillScreen(ST77XX_BLACK);
-  time = millis() - time;
-
   tft.fillScreen(ST77XX_BLACK);
   testfillcircles(10, ST77XX_BLUE);
   testdrawcircles(10, ST77XX_WHITE);
@@ -126,8 +121,8 @@ void setup() {
   tft.setTextSize(4); 
   tft.setTextColor(ST77XX_BLACK);
   Serial.println("init display test done");
+  tft.println("display");  
   tft.println("init");
-  tft.println("display");
   tft.println("complete");
   delay(500);
   tft.fillScreen(ST77XX_BLACK);  
@@ -203,18 +198,11 @@ void loop() {
     printo2();
   }
 
-//  if( prevaveSensorValue!=aveSensorValue)
-//  {
-//    deleteSensorValue();
-//    printSensorValue();
-//  }
-
   if( prevmodfsw!=modfsw)
   {
     deletemod();
     printmod();
   }
-
 }
 
 void o2calibration() 
@@ -251,22 +239,6 @@ void o2calibration()
   tft.fillScreen(ST77XX_BLACK);
   calFactor = (1 / RA.getAverage()*20.900);  // Auto Calibrate to 20.9%
 
-}
-
-void printSensorValue()
-{
-  tft.setCursor(130, 165);
-  tft.setTextSize(2);
-  tft.setTextColor(ST77XX_YELLOW);
-  tft.println(aveSensorValue);
-}
-
-void deleteSensorValue()
-{
-  tft.setCursor(130, 165);
-  tft.setTextSize(2);
-  tft.setTextColor(ST77XX_BLACK);
-  tft.println(prevaveSensorValue);
 }
 
 void printmod()
@@ -351,7 +323,7 @@ void initst7789()
 
 float initADC()
 {
-    // init ADC 
+  // init ADC and Set gain 
   Serial.println("Getting differential reading from AIN0 (P) and AIN1 (N)");
   Serial.println("ADC Range: +/- 6.144V (1 bit = 3mV/ADS1015, 0.1875mV/ADS1115)");
 
