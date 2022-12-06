@@ -21,7 +21,7 @@ Some of this code is adapted from other EANx project scripts:
 ### The Basic [monochrome] project:
 + Arduino, ESP32 or similar processor chip, with appropriate power supply
 + Adafruit ADS1115 or equivelent 16 bit 
-+ I2C or SPI Liquid-crystal display (LCD) ST1306 or u8g2 
++ I2C or SPI Organic light-emitting diode (OLED) ST1306 or u8g2 
 + O2 Sensor
 + Project case
 
