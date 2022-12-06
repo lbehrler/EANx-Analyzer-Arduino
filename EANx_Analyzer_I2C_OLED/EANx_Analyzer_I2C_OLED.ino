@@ -1,5 +1,3 @@
-
-
 /*****************************************************************************
 
   EANx Analysis with output to an OLED color display
@@ -18,7 +16,6 @@
 #include <SPI.h>
 #include <Adafruit_GFX.h>    // Core graphics library
 #include <Adafruit_ST7789.h> // Hardware-specific library for ST7789
-#include <Adafruit_ST7735.h> // Hardware-specific library for ST7789
 #include <Adafruit_ADS1X15.h>  
 #include <Adafruit_SSD1306.h> // Hardware-specific library for ST1306
 #include <splash.h>
@@ -57,43 +54,15 @@
   #define ADCPIN1       39
   #define ADCFACT       4095 
 
-#elif defined(ARDUINO_ESP32S3_DEV)
-  #define PIN_LCD_BL                   38
-  #define PIN_LCD_D0                   39
-  #define PIN_LCD_D1                   40
-  #define PIN_LCD_D2                   41
-  #define PIN_LCD_D3                   42
-  #define PIN_LCD_D4                   45
-  #define PIN_LCD_D5                   46
-  #define PIN_LCD_D6                   47
-  #define PIN_LCD_D7                   48
-  #define PIN_POWER_ON                 15
-  #define PIN_LCD_RES                  5
-  #define PIN_LCD_CS                   6
-  #define PIN_LCD_DC                   7
-  #define PIN_LCD_WR                   8
-  #define PIN_LCD_RD                   9
-  #define PIN_BUTTON_1                 0
-  #define PIN_BUTTON_2                 14
-  #define PIN_BAT_VOLT                 4
-  #define PIN_IIC_SCL                  17
-  #define PIN_IIC_SDA                  18
-  #define PIN_TOUCH_INT                16
-  #define PIN_TOUCH_RES                21
-  #define TFT_RES    5
-  #define TFT_CS     6
-  #define TFT_DC     7
-  #define TFT_SCL    17
-  #define TFT_SDA    18
-
 #elif defined(ARDUINO_AVR_NANO)
-  #define TFT_SDA       21     
-  #define TFT_SCL       22
-  #define TFT_MOSI      23    // Data out
-  #define TFT_SCLK      18    // Clock out  #define 
-  #define TFT_RST       5     // Or set to -1 and connect to Arduino RESET pin                                            
-  #define TFT_DC        10
-  #define TFT_CS        9
+  #define TFT_SDA       23     
+  #define TFT_SCL       24
+  #define TFT_MOSI      11    // Data out
+  #define TFT_SCLK      13    // Clock out  #define 
+  #define TFT_RST       -1    // Or set to -1 and connect to Arduino RESET pin                                            
+  #define TFT_DC        9
+  #define TFT_CS        10
+  #define BUTTON        2
   #define ADCPIN0       36
   #define ADCPIN1       39
   #define ADCFACT       4095 
@@ -112,8 +81,6 @@
 #define SCREEN_WIDTH  128             // OLED display width, in pixels
 #define SCREEN_HEIGHT 32              // OLED display height, in pixels
 #define OLED_RESET     -1             // Reset pin # (or -1 if sharing Arduino reset pin)
-
-Adafruit_ST7789 tft = Adafruit_ST7789(TFT_CS, TFT_DC, TFT_MOSI, TFT_SCLK, TFT_RST); //Define OLED display
 
 #define SCREEN_ADDRESS 0x3C ///< See datasheet for Address; 0x3D for 128x64, 0x3C for 128x32
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
@@ -137,21 +104,13 @@ int modmsw = 0;
 int prevmodfsw = 0;
 int prevmodmsw = 0;
 float modppo = 1.4;
+float multiplier = 0;
 
 void setup() {
   // initialize serial communication at 9600 bits per second:
   Serial.begin(19200);
 
   initst1306();
-  initst7789();
-
-  // SPI speed defaults to SPI_DEFAULT_FREQ defined in the library, you can override it here
-  // Note that speed allowable depends on chip and quality of wiring, if you go too fast, you
-  // may end up with a black screen some times, or all the time.
-  //tft.setSPISpeed(40000000);
-
-  display.clearDisplay();
-  display.display();
 
   // Display Text
   display.setTextSize(2);
@@ -182,6 +141,7 @@ void setup() {
   tft.fillScreen(ST77XX_BLACK);  
   
   // setup display and calibrate unit
+  
   o2calibration();
   printLayout();
 
@@ -196,41 +156,10 @@ void setup() {
   display.display();
 }
 
-
 // the loop routine runs over and over again forever:
 void loop() {
  
-  // init ADC 
-  Serial.println("Getting differential reading from AIN0 (P) and AIN1 (N)");
-  Serial.println("ADC Range: +/- 6.144V (1 bit = 3mV/ADS1015, 0.1875mV/ADS1115)");
-
-  // The ADC input range (or gain) can be changed via the following
-  // functions, but be careful never to exceed VDD +0.3V max, or to
-  // exceed the upper and lower limits if you adjust the input range!
-  // Setting these values incorrectly may destroy your ADC!
-  //                                                                ADS1015  ADS1115
-  //                                                                -------  -------
-  // ads.setGain(GAIN_TWOTHIRDS);  // 2/3x gain +/- 6.144V  1 bit = 3mV      0.1875mV (default)
-  // ads.setGain(GAIN_ONE);        // 1x gain   +/- 4.096V  1 bit = 2mV      0.125mV
-  ads.setGain(GAIN_TWO);        // 2x gain   +/- 2.048V  1 bit = 1mV      0.0625mV
-  // ads.setGain(GAIN_FOUR);       // 4x gain   +/- 1.024V  1 bit = 0.5mV    0.03125mV
-  // ads.setGain(GAIN_EIGHT);      // 8x gain   +/- 0.512V  1 bit = 0.25mV   0.015625mV
-  // ads.setGain(GAIN_SIXTEEN);    // 16x gain  +/- 0.256V  1 bit = 0.125mV  0.0078125mV
-
-  /* Be sure to update this value based on the IC and the gain settings! */
-  //float   multiplier = 3.0F;    /* ADS1015 @ +/- 6.144V gain (12-bit results) */
-  float multiplier = 0.0625; /* ADS1115  @ +/- 6.144V gain (16-bit results) */
-
-  // Check that the ADC is operational 
-  if (!ads.begin()) {
-    Serial.println("Failed to initialize ADS.");
-    tft.setCursor(0,30);
-    tft.setTextSize(4);
-    tft.setTextColor(ST77XX_RED);
-    tft.println(F("Error"));
-    tft.println(F("No Init"));
-    while (1);
-  }
+  multiplier = initADC();
 
   int16_t results;
 
@@ -303,11 +232,8 @@ void loop() {
     printmod();
   }
 
-
-
-
 }
-/*************************************************************************************************************************************************************/
+
 void o2calibration() 
 {
   //display "Calibrating"
@@ -327,32 +253,8 @@ void o2calibration()
   Serial.println("Calibration Screen Text");
   
   testscrolltext();
+  initADC();
 
-  //                                                                ADS1015  ADS1115
-  //                                                                -------  -------
-  // ads.setGain(GAIN_TWOTHIRDS);  // 2/3x gain +/- 6.144V  1 bit = 3mV      0.1875mV (default)
-  // ads.setGain(GAIN_ONE);        // 1x gain   +/- 4.096V  1 bit = 2mV      0.125mV
-  ads.setGain(GAIN_TWO);        // 2x gain   +/- 2.048V  1 bit = 1mV      0.0625mV
-  // ads.setGain(GAIN_FOUR);       // 4x gain   +/- 1.024V  1 bit = 0.5mV    0.03125mV
-  // ads.setGain(GAIN_EIGHT);      // 8x gain   +/- 0.512V  1 bit = 0.25mV   0.015625mV
-  // ads.setGain(GAIN_SIXTEEN);    // 16x gain  +/- 0.256V  1 bit = 0.125mV  0.0078125mV
-
-  /* Be sure to update this value based on the IC and the gain settings! */
-  //float   multiplier = 3.0F;    /* ADS1015 @ +/- 6.144V gain (12-bit results) */
-  float multiplier =  0.0625;   /* ADS1115  @ +/- 6.144V gain (16-bit results) */
-
-  // Check that the ADC is operational 
-  if (!ads.begin()) 
-  {
-    tft.fillScreen(ST77XX_RED);
-    tft.setCursor(0,30);
-    tft.setTextSize(4);
-    tft.setTextColor(ST77XX_BLACK);
-    tft.println("Err");
-    tft.println("No ADC Init");
-    Serial.println("Failed to initialize ADS.");
-    while (1);
-  }
   Serial.println("Post ADS check statement");
   // get running average value from ADC input Pin
   RA.clear();
@@ -489,6 +391,42 @@ void initst7789()
 //  tft.init(128, 160);       // Init ST7735 128x160
   tft.setRotation(2);       // Adjust SS7789 Orientation
 }
+
+float initADC()
+{
+    // init ADC 
+  Serial.println("Getting differential reading from AIN0 (P) and AIN1 (N)");
+  Serial.println("ADC Range: +/- 6.144V (1 bit = 3mV/ADS1015, 0.1875mV/ADS1115)");
+
+  // The ADC input range (or gain) can be changed via the following
+  //                                                                ADS1015  ADS1115
+  //                                                                -------  -------
+  // ads.setGain(GAIN_TWOTHIRDS);  // 2/3x gain +/- 6.144V  1 bit = 3mV      0.1875mV (default)
+  // ads.setGain(GAIN_ONE);        // 1x gain   +/- 4.096V  1 bit = 2mV      0.125mV
+  ads.setGain(GAIN_TWO);        // 2x gain   +/- 2.048V  1 bit = 1mV      0.0625mV
+  // ads.setGain(GAIN_FOUR);       // 4x gain   +/- 1.024V  1 bit = 0.5mV    0.03125mV
+  // ads.setGain(GAIN_EIGHT);      // 8x gain   +/- 0.512V  1 bit = 0.25mV   0.015625mV
+  // ads.setGain(GAIN_SIXTEEN);    // 16x gain  +/- 0.256V  1 bit = 0.125mV  0.0078125mV
+
+  /* Be sure to update this value based on the IC and the gain settings! */
+  //float   multiplier = 3.0F;    /* ADS1015 @ +/- 6.144V gain (12-bit results) */
+  float multiplier = 0.0625; /* ADS1115  @ +/- 6.144V gain (16-bit results) */
+
+  // Check that the ADC is operational 
+  if (!ads.begin()) {
+    Serial.println("Failed to initialize ADS.");
+    tft.setCursor(0,30);
+    tft.setTextSize(4);
+    tft.setTextColor(ST77XX_RED);
+    tft.println(F("Error"));
+    tft.println(F("No Init"));
+    while (1);
+  }
+
+  return (multiplier);
+}
+
+
 
 void testfillcircles(uint8_t radius, uint16_t color) {
   for (int16_t x=radius; x < tft.width(); x+=radius*2) {
