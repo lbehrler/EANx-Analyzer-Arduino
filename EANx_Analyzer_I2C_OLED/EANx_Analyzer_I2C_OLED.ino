@@ -8,23 +8,19 @@
 *****************************************************************************/
 
 // Libraries 
-#include <Arduino.h>
-#include <U8g2lib.h>
+//#include <Arduino.h>
 #include <RunningAverage.h>
 #include <Adafruit_ADS1X15.h>  
 #include <Wire.h>
-//#include <Adafruit_GFX.h>    // Core graphics library
-
 #include <Adafruit_SSD1306.h> // Hardware-specific library for ST1306
-//#include <splash.h>
-//#include "pin_config.h"
+#include "pin_config.h"
 
 // ST1306 definitions
 #define SCREEN_WIDTH  128             // OLED display width, in pixels
 #define SCREEN_HEIGHT 64              // OLED display height, in pixels
 #define OLED_RESET     -1             // Reset pin # (or -1 if sharing Arduino reset pin)
 
-#define SCREEN_ADDRESS 0x3C ///< See datasheet for Address; 0x3D for 128x64, 0x3C for 128x32
+#define SCREEN_ADDRESS 0x3C ///< See datasheet for Address; 0x3D, 0x3C 
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
 Adafruit_ADS1115 ads;  // Define ADC - 16-bit version 
@@ -36,6 +32,7 @@ RunningAverage RA(RA_SIZE);   //Initialize Running Average
 // Global Variabls 
        
 float aveSensorValue = 0;
+float sensorValue = 0;
 float voltage = 0;
 float prevO2 = 0;
 float currentO2 = 0;
@@ -65,7 +62,6 @@ void setup() {
 
   o2calibration();
 
-
 }
 
 // the loop routine runs over and over again forever:
@@ -73,16 +69,9 @@ void loop() {
  
   multiplier = initADC();
 
-  int16_t results;
-
-  results = ads.readADC_Differential_0_1();
-
-  Serial.print("Differential: "); Serial.print(results); Serial.print("("); Serial.print(results * multiplier / 2); Serial.println("mV)");
-
   // get running average value from ADC input Pin
   RA.clear();
   for (int x=0; x<= RA_SIZE; x++) {
-    int sensorValue = 0;
     sensorValue = ads.readADC_Differential_0_1();
     RA.addValue(sensorValue);
     delay(16);
@@ -154,7 +143,7 @@ void o2calibration()
     display.println(F("O2 Sensor"));
   Serial.println(F("Calibration Screen Text"));
   display.display();
-  delay(1000);
+  delay(200);
 
   initADC();
 
@@ -162,7 +151,6 @@ void o2calibration()
   // get running average value from ADC input Pin
   RA.clear();
   for (int x=0; x<= (RA_SIZE*5); x++) {
-    int sensorValue = 0;
     sensorValue = ads.readADC_Differential_0_1();
     RA.addValue(sensorValue);
     Serial.print(F("calibrating "));
@@ -171,7 +159,6 @@ void o2calibration()
   display.clearDisplay();
   display.display();
   calFactor = (1 / RA.getAverage()*20.900);  // Auto Calibrate to 20.9%
-
 }
 
 
@@ -193,7 +180,7 @@ void initst1306()
 float initADC()
 {
     // init ADC 
-  Serial.println(F("Getting differential reading from AIN0 (P) and AIN1 (N)"));
+  //Serial.println(F("Getting differential reading from AIN0 (P) and AIN1 (N)"));
 
   // The ADC input range (or gain) can be changed via the following
   //                                                                ADS1015  ADS1115
@@ -207,7 +194,7 @@ float initADC()
 
   /* Be sure to update this value based on the IC and the gain settings! */
   //float   multiplier = 3.0F;    /* ADS1015 @ +/- 6.144V gain (12-bit results) */
-  float multiplier = 0.0625; /* ADS1115  @ +/- 6.144V gain (16-bit results) */
+  multiplier = 0.0625; /* ADS1115  @ +/- 6.144V gain (16-bit results) */
 
   // Check that the ADC is operational 
   if (!ads.begin()) {
