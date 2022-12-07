@@ -1,6 +1,6 @@
 /*****************************************************************************
 
-  EANx Analysis with output to an OLED color display
+  EANx Analysis with output to an SSD 1306 OLED mono display
 
   Reads an analog input on pin, converts it to voltage, grabs a running average 
   of ADC values and and prints the result to the display and debug to Serial Monitor.
@@ -12,78 +12,33 @@
 *****************************************************************************/
 
 // Libraries 
+#include <Arduino.h>
+#include <U8g2lib.h>
 #include <RunningAverage.h>
-#include <SPI.h>
-#include <Adafruit_GFX.h>    // Core graphics library
-#include <Adafruit_ST7789.h> // Hardware-specific library for ST7789
 #include <Adafruit_ADS1X15.h>  
-#include <Adafruit_SSD1306.h> // Hardware-specific library for ST1306
-#include <splash.h>
-// #include "pin_config.h"
 
-// Chip Specific settings for SPI OLED 
-#if defined(ARDUINO_FEATHER_ESP32) // Feather Huzzah32
-  #define TFT_CS         14
-  #define TFT_RST        15
-  #define TFT_DC         32
-
-#elif defined(ESP8266)
-  #define TFT_CS         4
-  #define TFT_RST        16                                            
-  #define TFT_DC         5
-
-#elif defined(SEEED_XIAO_M0)  // Seeed XAIO
-  #define TFT_CS        6
-  #define TFT_RST       2     // Or set to -1 and connect to Arduino RESET pin
-  #define TFT_DC        7
-  #define TFT_MOSI      10    // Data out
-  #define TFT_SCLK      8     // Clock out
-  #define ADCPIN0       0
-  #define ADCPIN1       1
-  #define ADCFACT       1024  
-
-#elif defined(ARDUINO_ESP32_PICO)
-  #define TFT_SDA       21     
-  #define TFT_SCL       22
-  #define TFT_MOSI      23    // Data out
-  #define TFT_SCLK      18    // Clock out  #define 
-  #define TFT_RST       5     // Or set to -1 and connect to Arduino RESET pin                                            
-  #define TFT_DC        10
-  #define TFT_CS        9
-  #define ADCPIN0       36
-  #define ADCPIN1       39
-  #define ADCFACT       4095 
-
-#elif defined(ARDUINO_AVR_NANO)
-  #define TFT_SDA       23     
-  #define TFT_SCL       24
-  #define TFT_MOSI      11    // Data out
-  #define TFT_SCLK      13    // Clock out  #define 
-  #define TFT_RST       -1    // Or set to -1 and connect to Arduino RESET pin                                            
-  #define TFT_DC        9
-  #define TFT_CS        10
-  #define BUTTON        2
-  #define ADCPIN0       36
-  #define ADCPIN1       39
-  #define ADCFACT       4095 
-
-#else
-  // For the breakout board, you can use any 2 or 3 pins.
-  // These pins will also work for the 1.8" TFT shield.
-  #define TFT_CS        10
-  #define TFT_RST       9 // Or set to -1 and connect to Arduino RESET pin
-  #define TFT_DC        8
-  #define ADCPIN0       0
-  #define ADCPIN1       3
+#ifdef U8X8_HAVE_HW_SPI
+#include <SPI.h>
 #endif
+#ifdef U8X8_HAVE_HW_I2C
+#include <Wire.h>
+#endif
+
+//#include <SPI.h>
+//#include <Adafruit_GFX.h>    // Core graphics library
+
+//#include <Adafruit_SSD1306.h> // Hardware-specific library for ST1306
+//#include <splash.h>
+#include "pin_config.h"
 
 // ST1306 definitions
 #define SCREEN_WIDTH  128             // OLED display width, in pixels
-#define SCREEN_HEIGHT 32              // OLED display height, in pixels
+#define SCREEN_HEIGHT 64              // OLED display height, in pixels
 #define OLED_RESET     -1             // Reset pin # (or -1 if sharing Arduino reset pin)
 
 #define SCREEN_ADDRESS 0x3C ///< See datasheet for Address; 0x3D for 128x64, 0x3C for 128x32
-Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
+//Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
+U8G2_SSD1306_128X64_NONAME_F_HW_I2C u8g2(U8G2_R0, /* reset=*/ U8X8_PIN_NONE);
 
 Adafruit_ADS1115 ads;  // Define ADC - 16-bit version 
 
@@ -105,10 +60,28 @@ int prevmodfsw = 0;
 int prevmodmsw = 0;
 float modppo = 1.4;
 float multiplier = 0;
+/* sample 
+  u8g2.setFont(u8g2_font_unifont_t_chinese2);  // use chinese2 for all the glyphs of "你好世界"
+  u8g2.setFontDirection(0);
+  u8g2.clearBuffer();
+  u8g2.setCursor(0, 15);
+  u8g2.print("Hello World!");
+  u8g2.setCursor(0, 40);
+  u8g2.print("你好世界");		// Chinese "Hello World" 
+  u8g2.sendBuffer();   */
 
 void setup() {
   // initialize serial communication at 9600 bits per second:
-  Serial.begin(19200);
+  Serial.begin(9600);
+
+
+  u8g2.begin();  
+  
+  u8g2.setFont(u8g2_font_inb30_mr);	// set the target font to calculate the pixel width
+  width = u8g2.getUTF8Width(text);		// calculate the pixel width of the text
+  
+  u8g2.setFontMode(0);		// enable transparent mode, which is faster
+
 
   initst1306();
 
@@ -121,24 +94,21 @@ void setup() {
 
   Serial.println("Display Initialized");
 
-  uint16_t time = millis();
-  tft.fillScreen(ST77XX_BLACK);
-  time = millis() - time;
+  display.clearDisplay();
+  display.display();
 
-  tft.fillScreen(ST77XX_BLACK);
-  testfillcircles(10, ST77XX_BLUE);
-  testdrawcircles(10, ST77XX_WHITE);
-  delay(500);
-
-  tft.fillScreen(ST77XX_GREEN);
-  tft.setTextSize(4); 
-  tft.setTextColor(ST77XX_BLACK);
+  display.fillScreen(WHITE);
+  display.setTextSize(3); 
+  display.setTextColor(BLACK);
   Serial.println("init display test done");
-  tft.println("init");
-  tft.println("display");
-  tft.println("complete");
+  display.setCursor(10, 0);
+  display.println("init");
+  display.println("display");
+  display.println("complete");
+  display.display();
   delay(500);
-  tft.fillScreen(ST77XX_BLACK);  
+  display.clearDisplay();
+  display.display();
   
   // setup display and calibrate unit
   
@@ -237,22 +207,23 @@ void loop() {
 void o2calibration() 
 {
   //display "Calibrating"
-  tft.fillScreen(ST77XX_BLACK);
-  tft.setTextColor(ST77XX_WHITE);
-  tft.setTextSize(4);
-  tft.setCursor(0,10);
-  tft.println(F("++++++++++"));
-  tft.println();
-  tft.setTextSize(3);
-  tft.println(F("Calibrating"));
-  tft.println();
-  tft.setTextSize(4);
-  tft.println(F("O2 Sensor"));
-  tft.println();
-  tft.println(F("++++++++++"));
+  display.fillScreen(BLACK);
+  display.setTextColor(WHITE);
+  display.setTextSize(4);
+  display.setCursor(0,10);
+  display.println(F("++++++++++"));
+  display.println();
+  display.setTextSize(3);
+  display.println(F("Calibrating"));
+  display.println();
+  display.setTextSize(4);
+  display.println(F("O2 Sensor"));
+  display.println();
+  display.println(F("++++++++++"));
   Serial.println("Calibration Screen Text");
-  
+  display.display();
   testscrolltext();
+
   initADC();
 
   Serial.println("Post ADS check statement");
@@ -266,76 +237,70 @@ void o2calibration()
     Serial.print("calibrating ");
     Serial.println(sensorValue);    //mV serial print for debugging
   } 
-  tft.fillScreen(ST77XX_BLACK);
+  display.clearDisplay();
+  display.display();
   calFactor = (1 / RA.getAverage()*20.900);  // Auto Calibrate to 20.9%
 
 }
 
 void printSensorValue()
 {
-  tft.setCursor(130, 165);
-  tft.setTextSize(2);
-  tft.setTextColor(ST77XX_YELLOW);
-  tft.println(aveSensorValue);
+  display.setCursor(130, 165);
+  display.setTextSize(2);
+  display.setTextColor(WHITE);
+  display.println(aveSensorValue);
 }
 
 void deleteSensorValue()
 {
-  tft.setCursor(130, 165);
-  tft.setTextSize(2);
-  tft.setTextColor(ST77XX_BLACK);
-  tft.println(prevaveSensorValue);
+  display.setCursor(130, 165);
+  display.setTextSize(2);
+  display.setTextColor(BLACK);
+  display.println(prevaveSensorValue);
 }
 
 void printmod()
 {
-  tft.setCursor(130, 165);
-  tft.setTextSize(2);
-  tft.setTextColor(ST77XX_YELLOW);
-  tft.print(modfsw);
-  tft.print(" FT");
-  tft.setCursor(130, 185);
-  tft.print(modmsw);
-  tft.println(" m");
+  display.setCursor(130, 165);
+  display.setTextSize(2);
+  display.setTextColor(WHITE);
+  display.print(modfsw);
+  display.print(" FT");
+  display.setCursor(130, 185);
+  display.print(modmsw);
+  display.println(" m");
 }
 
 void deletemod()
 {
-  tft.setCursor(130, 165);
-  tft.setTextSize(2);
-  tft.setTextColor(ST77XX_BLACK);
-  tft.print(prevmodfsw);
-  tft.print(" FT");
-  tft.setCursor(130, 185);
-  tft.print(prevmodmsw);
-  tft.println(" m");
+  display.setCursor(130, 165);
+  display.setTextSize(2);
+  display.setTextColor(BLACK);
+  display.print(prevmodfsw);
+  display.print(" FT");
+  display.setCursor(130, 185);
+  display.print(prevmodmsw);
+  display.println(" m");
 }
 
 void printVoltage()
 {
-  tft.setCursor(30, 160);
-  tft.setTextSize(4);
-  tft.setTextColor(ST77XX_RED);
-  tft.println(voltage,1);
+  display.setCursor(30, 160);
+  display.setTextSize(4);
+  display.setTextColor(WHITE);
+  display.println(voltage,1);
 }
 
 void deleteVoltage()
 {
-  tft.setCursor(30, 160);
-  tft.setTextSize(4);
-  tft.setTextColor(ST77XX_BLACK);
-  tft.println(prevvoltage,1);
+  display.setCursor(30, 160);
+  display.setTextSize(4);
+  display.setTextColor(BLACK);
+  display.println(prevvoltage,1);
 }
 
 void printo2()
 {
-  tft.setCursor(40, 50);
-  tft.setTextSize(6);
-  if(currentO2>20 and currentO2<22) {  tft.setTextColor(ST77XX_CYAN);}
-  if(currentO2<20) {  tft.setTextColor(ST77XX_RED);}
-  if(currentO2>22) {  tft.setTextColor(ST77XX_GREEN);}
-  tft.println(currentO2,1);
-    // Display Text on ST1306
   display.setTextSize(2);
   display.setTextColor(WHITE);
   display.setCursor(0,10);
@@ -348,26 +313,22 @@ void printo2()
 
 void deleteo2()
 {
-  tft.setCursor(40, 50);
-  tft.setTextSize(6);
-  tft.setTextColor(ST77XX_BLACK);
-  tft.println(prevO2,1);
   display.clearDisplay();
   display.display();
 }
 
 void printLayout()
 {
-  tft.setCursor(50, 5);
-  tft.setTextSize(4);
-  tft.setTextColor(ST77XX_GREEN);
-  tft.println("O2 %");
-  tft.setCursor(30, 120);
-  tft.setTextSize(4);
-  tft.setTextColor(ST77XX_BLUE);
-  tft.print("mV");
-  tft.setTextColor(ST77XX_ORANGE);
-  tft.println("  MOD");
+  display.setCursor(50, 5);
+  display.setTextSize(4);
+  display.setTextColor(WHITE);
+  display.println("O2 %");
+  display.setCursor(30, 120);
+  display.setTextSize(4);
+  display.setTextColor(WHITE);
+  display.print("mV");
+  display.setTextColor(WHITE);
+  display.println("  MOD");
 }
 
 void initst1306()
@@ -383,13 +344,6 @@ void initst1306()
   // Clear the buffer
   display.clearDisplay();
   display.display();
-}
-
-void initst7789()
-{
-  tft.init(240, 240);       // Init ST7789 240x240
-//  tft.init(128, 160);       // Init ST7735 128x160
-  tft.setRotation(2);       // Adjust SS7789 Orientation
 }
 
 float initADC()
@@ -415,33 +369,13 @@ float initADC()
   // Check that the ADC is operational 
   if (!ads.begin()) {
     Serial.println("Failed to initialize ADS.");
-    tft.setCursor(0,30);
-    tft.setTextSize(4);
-    tft.setTextColor(ST77XX_RED);
-    tft.println(F("Error"));
-    tft.println(F("No Init"));
+    display.println(F("Error"));
+    display.println(F("No Init"));
+    display.display();
     while (1);
   }
 
   return (multiplier);
-}
-
-
-
-void testfillcircles(uint8_t radius, uint16_t color) {
-  for (int16_t x=radius; x < tft.width(); x+=radius*2) {
-    for (int16_t y=radius; y < tft.height(); y+=radius*2) {
-      tft.fillCircle(x, y, radius, color);
-    }
-  }
-}
-
-void testdrawcircles(uint8_t radius, uint16_t color) {
-  for (int16_t x=0; x < tft.width()+radius; x+=radius*2) {
-    for (int16_t y=0; y < tft.height()+radius; y+=radius*2) {
-      tft.drawCircle(x, y, radius, color);
-    }
-  }
 }
 
 void testscrolltext(void) {
