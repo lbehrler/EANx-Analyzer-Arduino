@@ -1,14 +1,10 @@
 /*****************************************************************************
-
   EANx Analysis with output to an SSD 1306 OLED mono display
-
   Reads an analog input on pin, converts it to voltage, grabs a running average 
   of ADC values and and prints the result to the display and debug to Serial Monitor.
-
   Based on prior EANx scripts: 
   https://github.com/ppppaoppp/DIY-Nitrox-Analyzer-04_12_2019.git
   https://github.com/ejlabs/arduino-nitrox-analyzer.git
-
 *****************************************************************************/
 
 // Libraries 
@@ -16,20 +12,12 @@
 #include <U8g2lib.h>
 #include <RunningAverage.h>
 #include <Adafruit_ADS1X15.h>  
-
-#ifdef U8X8_HAVE_HW_SPI
-#include <SPI.h>
-#endif
-#ifdef U8X8_HAVE_HW_I2C
 #include <Wire.h>
-#endif
-
-//#include <SPI.h>
 //#include <Adafruit_GFX.h>    // Core graphics library
 
-//#include <Adafruit_SSD1306.h> // Hardware-specific library for ST1306
+#include <Adafruit_SSD1306.h> // Hardware-specific library for ST1306
 //#include <splash.h>
-#include "pin_config.h"
+//#include "pin_config.h"
 
 // ST1306 definitions
 #define SCREEN_WIDTH  128             // OLED display width, in pixels
@@ -37,8 +25,7 @@
 #define OLED_RESET     -1             // Reset pin # (or -1 if sharing Arduino reset pin)
 
 #define SCREEN_ADDRESS 0x3C ///< See datasheet for Address; 0x3D for 128x64, 0x3C for 128x32
-//Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
-U8G2_SSD1306_128X64_NONAME_F_HW_I2C u8g2(U8G2_R0, /* reset=*/ U8X8_PIN_NONE);
+Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
 Adafruit_ADS1115 ads;  // Define ADC - 16-bit version 
 
@@ -47,41 +34,20 @@ Adafruit_ADS1115 ads;  // Define ADC - 16-bit version
 RunningAverage RA(RA_SIZE);   //Initialize Running Average
 
 // Global Variabls 
-float prevaveSensorValue = 0;         
+       
 float aveSensorValue = 0;
-float prevvoltage = 0;
 float voltage = 0;
 float prevO2 = 0;
 float currentO2 = 0;
 float calFactor = 1;
 int modfsw = 0;
 int modmsw = 0;
-int prevmodfsw = 0;
-int prevmodmsw = 0;
 float modppo = 1.4;
 float multiplier = 0;
-/* sample 
-  u8g2.setFont(u8g2_font_unifont_t_chinese2);  // use chinese2 for all the glyphs of "你好世界"
-  u8g2.setFontDirection(0);
-  u8g2.clearBuffer();
-  u8g2.setCursor(0, 15);
-  u8g2.print("Hello World!");
-  u8g2.setCursor(0, 40);
-  u8g2.print("你好世界");		// Chinese "Hello World" 
-  u8g2.sendBuffer();   */
 
 void setup() {
   // initialize serial communication at 9600 bits per second:
   Serial.begin(9600);
-
-
-  u8g2.begin();  
-  
-  u8g2.setFont(u8g2_font_inb30_mr);	// set the target font to calculate the pixel width
-  width = u8g2.getUTF8Width(text);		// calculate the pixel width of the text
-  
-  u8g2.setFontMode(0);		// enable transparent mode, which is faster
-
 
   initst1306();
 
@@ -92,38 +58,14 @@ void setup() {
   display.println("Startup");
   display.display();
 
-  Serial.println("Display Initialized");
+  Serial.println(F("Display Initialized"));
 
   display.clearDisplay();
   display.display();
 
-  display.fillScreen(WHITE);
-  display.setTextSize(3); 
-  display.setTextColor(BLACK);
-  Serial.println("init display test done");
-  display.setCursor(10, 0);
-  display.println("init");
-  display.println("display");
-  display.println("complete");
-  display.display();
-  delay(500);
-  display.clearDisplay();
-  display.display();
-  
-  // setup display and calibrate unit
-  
   o2calibration();
-  printLayout();
 
-  // Display Text
-  display.setTextSize(2);
-  display.setTextColor(WHITE);
-  display.setCursor(0,10);
-  display.println("O2 Calibrated");
-  display.display();
-  delay(500);
-  display.clearDisplay();
-  display.display();
+
 }
 
 // the loop routine runs over and over again forever:
@@ -148,11 +90,7 @@ void loop() {
   } 
 
   // Record old and new ADC values 
-  prevaveSensorValue = aveSensorValue;
   prevO2 = currentO2;
-  prevvoltage = voltage;
-  prevmodfsw = modfsw;
-  prevmodmsw = modmsw;
   aveSensorValue = RA.getAverage();
 
   currentO2 = (aveSensorValue * calFactor);  // Units: pct
@@ -164,42 +102,41 @@ void loop() {
   modmsw =  10 * ((modppo / (currentO2 / 100)) - 1);
 
   // DEBUG print out the value you read:
-  Serial.print("ADC Raw Diff = ");
+  Serial.print(F("ADC Raw Diff = "));
   Serial.print(aveSensorValue);
-  Serial.print("  ");
-  Serial.print("Voltage = ");
+  Serial.print(F("  "));
+  Serial.print(F("Voltage = "));
   Serial.print(voltage);
-  Serial.print(" mV");
-  Serial.print("  ");
-  Serial.print("O2 = ");
+  Serial.print(F(" mV"));
+  Serial.print(F("  "));
+  Serial.print(F("O2 = "));
   Serial.print(currentO2);
-  Serial.print(" %");
+  Serial.print(F(" %"));
   Serial.print(modfsw);
-  Serial.println(" FT");
+  Serial.println(F(" FT"));
 
-  // Display values on OLED 
-  if( prevvoltage!=voltage)
-  {
-    deleteVoltage();
-    printVoltage();
-  }
-  
   if( prevO2!=currentO2)
   {
-    deleteo2();
-    printo2();
-  }
-
-//  if( prevaveSensorValue!=aveSensorValue)
-//  {
-//    deleteSensorValue();
-//    printSensorValue();
-//  }
-
-  if( prevmodfsw!=modfsw)
-  {
-    deletemod();
-    printmod();
+  display.clearDisplay();
+  display.setCursor(0, 0);
+  display.setTextSize(2);
+  display.println(F("EANx O2 %"));
+  display.setTextSize(2);
+  display.setCursor(0,20);
+  display.print("O2% ");
+  display.setTextSize(3);
+  display.println(currentO2,1);
+  display.setCursor(0,45);
+  display.setTextSize(2);
+  display.print("MOD ");
+  display.setTextSize(1);
+  display.setCursor(55,45);
+  display.print(modfsw);
+  display.println(" FT");
+  display.setCursor(55,55);
+  display.print(modmsw);
+  display.println(" m");
+  display.display();
   }
 
 }
@@ -209,32 +146,26 @@ void o2calibration()
   //display "Calibrating"
   display.fillScreen(BLACK);
   display.setTextColor(WHITE);
-  display.setTextSize(4);
-  display.setCursor(0,10);
-  display.println(F("++++++++++"));
-  display.println();
-  display.setTextSize(3);
-  display.println(F("Calibrating"));
-  display.println();
-  display.setTextSize(4);
-  display.println(F("O2 Sensor"));
-  display.println();
-  display.println(F("++++++++++"));
-  Serial.println("Calibration Screen Text");
+  display.setTextSize(2);
+  display.setCursor(0,0);
+  display.println(F("Init / Cal"));
+  display.setTextSize(2);
+  display.setCursor(0,20);
+    display.println(F("O2 Sensor"));
+  Serial.println(F("Calibration Screen Text"));
   display.display();
-  testscrolltext();
+  delay(1000);
 
   initADC();
 
-  Serial.println("Post ADS check statement");
+  Serial.println(F("Post ADS check statement"));
   // get running average value from ADC input Pin
   RA.clear();
   for (int x=0; x<= (RA_SIZE*5); x++) {
     int sensorValue = 0;
     sensorValue = ads.readADC_Differential_0_1();
     RA.addValue(sensorValue);
-    delay(16);
-    Serial.print("calibrating ");
+    Serial.print(F("calibrating "));
     Serial.println(sensorValue);    //mV serial print for debugging
   } 
   display.clearDisplay();
@@ -243,93 +174,6 @@ void o2calibration()
 
 }
 
-void printSensorValue()
-{
-  display.setCursor(130, 165);
-  display.setTextSize(2);
-  display.setTextColor(WHITE);
-  display.println(aveSensorValue);
-}
-
-void deleteSensorValue()
-{
-  display.setCursor(130, 165);
-  display.setTextSize(2);
-  display.setTextColor(BLACK);
-  display.println(prevaveSensorValue);
-}
-
-void printmod()
-{
-  display.setCursor(130, 165);
-  display.setTextSize(2);
-  display.setTextColor(WHITE);
-  display.print(modfsw);
-  display.print(" FT");
-  display.setCursor(130, 185);
-  display.print(modmsw);
-  display.println(" m");
-}
-
-void deletemod()
-{
-  display.setCursor(130, 165);
-  display.setTextSize(2);
-  display.setTextColor(BLACK);
-  display.print(prevmodfsw);
-  display.print(" FT");
-  display.setCursor(130, 185);
-  display.print(prevmodmsw);
-  display.println(" m");
-}
-
-void printVoltage()
-{
-  display.setCursor(30, 160);
-  display.setTextSize(4);
-  display.setTextColor(WHITE);
-  display.println(voltage,1);
-}
-
-void deleteVoltage()
-{
-  display.setCursor(30, 160);
-  display.setTextSize(4);
-  display.setTextColor(BLACK);
-  display.println(prevvoltage,1);
-}
-
-void printo2()
-{
-  display.setTextSize(2);
-  display.setTextColor(WHITE);
-  display.setCursor(0,10);
-  display.print("O2% ");
-  display.setTextSize(3);
-  display.setCursor(45,5);
-  display.println(currentO2,1);
-  display.display();
-}
-
-void deleteo2()
-{
-  display.clearDisplay();
-  display.display();
-}
-
-void printLayout()
-{
-  display.setCursor(50, 5);
-  display.setTextSize(4);
-  display.setTextColor(WHITE);
-  display.println("O2 %");
-  display.setCursor(30, 120);
-  display.setTextSize(4);
-  display.setTextColor(WHITE);
-  display.print("mV");
-  display.setTextColor(WHITE);
-  display.println("  MOD");
-}
 
 void initst1306()
 {
@@ -349,8 +193,7 @@ void initst1306()
 float initADC()
 {
     // init ADC 
-  Serial.println("Getting differential reading from AIN0 (P) and AIN1 (N)");
-  Serial.println("ADC Range: +/- 6.144V (1 bit = 3mV/ADS1015, 0.1875mV/ADS1115)");
+  Serial.println(F("Getting differential reading from AIN0 (P) and AIN1 (N)"));
 
   // The ADC input range (or gain) can be changed via the following
   //                                                                ADS1015  ADS1115
@@ -368,7 +211,7 @@ float initADC()
 
   // Check that the ADC is operational 
   if (!ads.begin()) {
-    Serial.println("Failed to initialize ADS.");
+    Serial.println(F("Failed to initialize ADS."));
     display.println(F("Error"));
     display.println(F("No Init"));
     display.display();
@@ -378,31 +221,3 @@ float initADC()
   return (multiplier);
 }
 
-void testscrolltext(void) {
-  display.clearDisplay();
-
-  display.setTextSize(2); // Draw 2X-scale text
-  display.setTextColor(SSD1306_WHITE);
-  display.setCursor(10, 0);
-  display.println(F("Calibrate O2"));
-  display.display();      // Show initial text
-  delay(100);
-
-  // Scroll in various directions, pausing in-between:
-  display.startscrollright(0x00, 0x0F);
-  delay(500);
-  display.stopscroll();
-  delay(500);
-  display.startscrollleft(0x00, 0x0F);
-  delay(500);
-  display.stopscroll();
-  delay(500);
-  display.startscrolldiagright(0x00, 0x07);
-  delay(500);
-  display.startscrolldiagleft(0x00, 0x07);
-  delay(500);
-  display.stopscroll();
-  delay(500);
-  display.clearDisplay();
-  display.display();
-}
