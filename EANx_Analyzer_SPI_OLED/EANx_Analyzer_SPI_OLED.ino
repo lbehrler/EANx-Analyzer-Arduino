@@ -268,8 +268,6 @@ void initst7789()
 float initADC()
 {
   // init ADC and Set gain 
-  Serial.println("Getting differential reading from AIN0 (P) and AIN1 (N)");
-  Serial.println("ADC Range: +/- 6.144V (1 bit = 3mV/ADS1015, 0.1875mV/ADS1115)");
 
   // The ADC input range (or gain) can be changed via the following
   //                                                                ADS1015  ADS1115

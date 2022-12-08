@@ -12,9 +12,9 @@
 #elif defined(SEEED_XIAO_M0)  // Seeed XAIO
   #define TFT_SDA       4     
   #define TFT_SCL       5
-  #define TFT_CS        6
+  #define TFT_CS        7
   #define TFT_RST       2     // Or set to -1 and connect to Arduino RESET pin
-  #define TFT_DC        7
+  #define TFT_DC        6
   #define TFT_MOSI      10    // Data out
   #define TFT_SCLK      8     // Clock out
   #define ADCPIN0       0

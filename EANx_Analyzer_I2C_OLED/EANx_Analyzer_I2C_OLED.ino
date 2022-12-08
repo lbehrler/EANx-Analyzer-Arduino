@@ -17,7 +17,7 @@
 
 // ST1306 definitions
 #define SCREEN_WIDTH  128             // OLED display width, in pixels
-#define SCREEN_HEIGHT 64              // OLED display height, in pixels
+#define SCREEN_HEIGHT  64             // OLED display height, in pixels
 #define OLED_RESET     -1             // Reset pin # (or -1 if sharing Arduino reset pin)
 
 #define SCREEN_ADDRESS 0x3C ///< See datasheet for Address; 0x3D, 0x3C 
@@ -29,7 +29,7 @@ Adafruit_ADS1115 ads;  // Define ADC - 16-bit version
 #define RA_SIZE 20            //Define running average pool size
 RunningAverage RA(RA_SIZE);   //Initialize Running Average
 
-// Global Variabls 
+// Global Variables 
        
 float aveSensorValue = 0;
 float sensorValue = 0;
@@ -94,13 +94,13 @@ void loop() {
   Serial.print(F("ADC Raw Diff = "));
   Serial.print(aveSensorValue);
   Serial.print(F("  "));
-  Serial.print(F("Voltage = "));
+  Serial.print(F("Voltage = ")); 
   Serial.print(voltage);
   Serial.print(F(" mV"));
   Serial.print(F("  "));
   Serial.print(F("O2 = "));
   Serial.print(currentO2);
-  Serial.print(F(" %"));
+  Serial.print(F(" % "));
   Serial.print(modfsw);
   Serial.println(F(" FT"));
 
