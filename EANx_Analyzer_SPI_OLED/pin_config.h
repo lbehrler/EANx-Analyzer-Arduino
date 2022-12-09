@@ -17,8 +17,6 @@
   #define TFT_DC        6
   #define TFT_MOSI      10    // Data out
   #define TFT_SCLK      8     // Clock out
-  #define ADCPIN0       0
-  #define ADCPIN1       1
   #define ADCFACT       1024  
 
 #elif defined(ARDUINO_ESP32_PICO)
@@ -29,8 +27,6 @@
   #define TFT_RST       5     // Or set to -1 and connect to Arduino RESET pin                                            
   #define TFT_DC        10
   #define TFT_CS        9
-  #define ADCPIN0       36
-  #define ADCPIN1       39
   #define ADCFACT       4095 
 
 #elif defined(ARDUINO_AVR_NANO)
@@ -41,9 +37,17 @@
   #define TFT_RST       -1    // Or set to -1 and connect to Arduino RESET pin                                            
   #define TFT_DC        9
   #define TFT_CS        10
-  #define BUTTON        2
-  #define ADCPIN0       36
-  #define ADCPIN1       39
+  #define ADCFACT       4095 
+
+#elif defined(ARDUINO_TINYS3)
+  #define TFT_SDA       8    
+  #define TFT_SCL       9
+  #define TFT_MOSI      35    // Data out
+  #define TFT_SCLK      36    // Clock out  #define 
+  #define TFT_RST       -1    // Or set to -1 and connect to Arduino RESET pin                                            
+  #define TFT_DC        3
+  #define TFT_CS        34
+  #define TFT_BLK       2
   #define ADCFACT       4095 
 
 #else
@@ -52,6 +56,4 @@
   #define TFT_CS        10
   #define TFT_RST       9 // Or set to -1 and connect to Arduino RESET pin
   #define TFT_DC        8
-  #define ADCPIN0       0
-  #define ADCPIN1       3
 #endif
