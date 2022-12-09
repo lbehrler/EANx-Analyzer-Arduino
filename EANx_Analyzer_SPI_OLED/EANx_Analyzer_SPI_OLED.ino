@@ -192,7 +192,7 @@ void printmod()
   tft.setTextColor(ST77XX_YELLOW);
   tft.print(modfsw);
   tft.print(" FT");
-  tft.setCursor(130, 185);
+  tft.setCursor(140, 185);
   tft.print(modmsw);
   tft.println(" m");
 }
@@ -204,7 +204,7 @@ void deletemod()
   tft.setTextColor(ST77XX_BLACK);
   tft.print(prevmodfsw);
   tft.print(" FT");
-  tft.setCursor(130, 185);
+  tft.setCursor(140, 185);
   tft.print(prevmodmsw);
   tft.println(" m");
 }
