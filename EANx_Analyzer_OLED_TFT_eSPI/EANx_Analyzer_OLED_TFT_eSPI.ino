@@ -17,21 +17,18 @@
 #include <RunningAverage.h>
 #include <SPI.h>
 #include <Adafruit_GFX.h>     // Core graphics library
-//#include <Adafruit_ST7789.h>  // Hardware-specific library for ST7789
 #include <TFT_eSPI.h>
 #include <Adafruit_ADS1X15.h>
 #include <splash.h>
 #include "pin_config.h"
 //#include "OTA.h"
-#include "C:\Users\Brian E\Documents\Arduino\libraries\TFT_eSPI\User_Setup.h"
-
+//#include "C:\Users\Brian E\Documents\Arduino\libraries\TFT_eSPI\User_Setup.h"  // Make sure you included YOUR specific user setup for TFT eSPI
 
 // ST1306 definitions
-#define SCREEN_WIDTH 128   // OLED display width, in pixels
-#define SCREEN_HEIGHT 160  // OLED display height, in pixels
+#define SCREEN_WIDTH 170   // OLED display width, in pixels
+#define SCREEN_HEIGHT 300  // OLED display height, in pixels
 #define OLED_RESET -1      // Reset pin # (or -1 if sharing Arduino reset pin)
 
-// Adafruit_ST7789 tft = Adafruit_ST7789(TFT_CS, TFT_DC, TFT_MOSI, TFT_SCLK, TFT_RST);  //Define OLED display
 TFT_eSPI tft = TFT_eSPI(); 
 
 Adafruit_ADS1115 ads;  // Define ADC - 16-bit version
@@ -43,15 +40,12 @@ RunningAverage RA(RA_SIZE);  //Initialize Running Average
 // Global Variabls
 float prevaveSensorValue = 0;
 float aveSensorValue = 0;
-float prevvoltage = 0;
 float voltage = 0;
 float prevO2 = 0;
 float currentO2 = 0;
 float calFactor = 1;
 int modfsw = 0;
 int modmsw = 0;
-int prevmodfsw = 0;
-int prevmodmsw = 0;
 float modppo = 1.4;
 float multiplier = 0;
 
@@ -97,12 +91,6 @@ void loop() {
 
   results = ads.readADC_Differential_0_1();
 
-  Serial.print("Differential: ");
-  Serial.print(results);
-  Serial.print("(");
-  Serial.print(results * multiplier / 2);
-  Serial.println("mV)");
-
   // get running average value from ADC input Pin
   RA.clear();
   for (int x = 0; x <= RA_SIZE; x++) {
@@ -112,14 +100,12 @@ void loop() {
     delay(16);
     // Serial.println(sensorValue);    //mV serial print for debugging
   }
+  delay(300); // slowing down loop a bit 
 
-  // Record old and new ADC values
   //ArduinoOTA.handle();
+  // Record old and new ADC values
   prevaveSensorValue = aveSensorValue;
   prevO2 = currentO2;
-  prevvoltage = voltage;
-  prevmodfsw = modfsw;
-  prevmodmsw = modmsw;
   aveSensorValue = RA.getAverage();
 
   currentO2 = (aveSensorValue * calFactor);  // Units: pct

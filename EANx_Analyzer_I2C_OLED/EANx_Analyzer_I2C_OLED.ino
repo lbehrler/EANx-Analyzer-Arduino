@@ -90,6 +90,7 @@ void loop() {
   modfsw =  33 * ((modppo / (currentO2 / 100)) - 1);
   modmsw =  10 * ((modppo / (currentO2 / 100)) - 1);
 
+  delay(300);
   // DEBUG print out the value you read:
   Serial.print(F("ADC Raw Diff = "));
   Serial.print(aveSensorValue);
@@ -102,7 +103,7 @@ void loop() {
   Serial.print(currentO2);
   Serial.print(F(" % "));
   Serial.print(modfsw);
-  Serial.println(F(" FT"));
+  Serial.println(F(" FT")); 
 
   if( prevO2!=currentO2)
   {
@@ -112,19 +113,19 @@ void loop() {
   display.println(F("EANx O2 %"));
   display.setTextSize(2);
   display.setCursor(0,20);
-  display.print("O2% ");
+  display.print(F("O2% "));
   display.setTextSize(3);
   display.println(currentO2,1);
   display.setCursor(0,45);
   display.setTextSize(2);
-  display.print("MOD ");
+  display.print(F("MOD "));
   display.setTextSize(1);
   display.setCursor(55,45);
   display.print(modfsw);
-  display.println(" FT");
+  display.println(F(" FT"));
   display.setCursor(55,55);
   display.print(modmsw);
-  display.println(" m");
+  display.println(F(" m"));
   display.display();
   }
 

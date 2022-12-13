@@ -89,12 +89,6 @@ void loop() {
 
   results = ads.readADC_Differential_0_1();
 
-  Serial.print("Differential: ");
-  Serial.print(results);
-  Serial.print("(");
-  Serial.print(results * multiplier / 2);
-  Serial.println("mV)");
-
   // get running average value from ADC input Pin
   RA.clear();
   for (int x = 0; x <= RA_SIZE; x++) {
