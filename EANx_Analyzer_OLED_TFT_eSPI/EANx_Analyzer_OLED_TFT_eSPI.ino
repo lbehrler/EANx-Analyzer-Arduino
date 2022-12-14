@@ -18,17 +18,18 @@
 #include <TFT_eSPI.h>
 #include <Adafruit_ADS1X15.h>
 #include <splash.h>
+#include "OTA.h"
+#include "C:\Users\Brian E\Documents\Arduino\libraries\TFT_eSPI_Setups\User_Setup128x128.h" // Make sure you included YOUR specific user setup for TFT eSPI
+//#include "C:\Users\Brian E\Documents\Arduino\libraries\TFT_eSPI_Setups\User_Setup240x240ST7789.h" // 240x240 SS7789 TFT 
 #include "pin_config.h"
-//#include "OTA.h"
-//#include "C:\Users\Brian E\Documents\Arduino\libraries\TFT_eSPI_Setups\User_Setup128x128.h" // Make sure you included YOUR specific user setup for TFT eSPI
-#include "C:\Users\Brian E\Documents\Arduino\libraries\TFT_eSPI\User_Setups\Setup7_ST7735_128x128BE.h"
 
-// ST1306 definitions
-#define SCREEN_WIDTH  128   // OLED display width, in pixels
-#define SCREEN_HEIGHT 128   // OLED display height, in pixels
+
+// display definitions
+#define SCREEN_WIDTH  240   // OLED display width, in pixels
+#define SCREEN_HEIGHT 240   // OLED display height, in pixels
 #define OLED_RESET    -1    // Reset pin # (or -1 if sharing Arduino reset pin)
 
-TFT_eSPI tft = TFT_eSPI(); 
+TFT_eSPI tft = TFT_eSPI();
 
 Adafruit_ADS1115 ads;  // Define ADC - 16-bit version
 
@@ -51,8 +52,8 @@ float multiplier = 0;
 void setup() {
   // initialize serial communication at 9600 bits per second:
   //Serial.begin(115200);
-  //ArduinoOTA.setHostname("EANxTinyPico");
-  //setupOTA("EANxTinyPico", mySSID, myPASSWORD);
+  ArduinoOTA.setHostname("EANxESP32Pico");
+  setupOTA("EANxTinyPico", mySSID, myPASSWORD);
 
   tft.init();
   tft.setRotation(2);
@@ -99,9 +100,9 @@ void loop() {
     delay(16);
     // Serial.println(sensorValue);    //mV serial print for debugging
   }
-  delay(300); // slowing down loop a bit 
+  delay(100); // slowing down loop a bit 
 
-  //ArduinoOTA.handle();
+  ArduinoOTA.handle();
   // Record old and new ADC values
   prevaveSensorValue = aveSensorValue;
   prevO2 = currentO2;
@@ -135,14 +136,13 @@ void loop() {
   if (currentO2 > 22) { tft.setTextColor(TFT_GREEN, TFT_BLACK); }
   tft.setTextSize(1);
   tft.drawFloat(currentO2, 1, SCREEN_WIDTH*.1, SCREEN_HEIGHT*.2, 7);
-  tft.setTextSize(1);
   tft.setTextColor(TFT_RED, TFT_BLACK);
-  tft.drawFloat(voltage, 1, SCREEN_WIDTH*.2, SCREEN_HEIGHT*.65, 2);
+  tft.drawFloat(voltage, 1, SCREEN_WIDTH*.2, SCREEN_HEIGHT*.7, 2);
   tft.setTextColor(TFT_YELLOW, TFT_BLACK);
-  tft.drawNumber(modfsw, SCREEN_WIDTH*.5, SCREEN_HEIGHT*.65, 2);
-  tft.drawString(" FT", SCREEN_WIDTH*.75, SCREEN_HEIGHT*.65, 2);
-  tft.drawNumber(modmsw, SCREEN_WIDTH*.5, SCREEN_HEIGHT*.75, 2);
-  tft.drawString(" m", SCREEN_WIDTH*.75, SCREEN_HEIGHT*.75, 2);
+  tft.drawNumber(modfsw, SCREEN_WIDTH*.5, SCREEN_HEIGHT*.7, 2);
+  tft.drawString(" FT", SCREEN_WIDTH*.75, SCREEN_HEIGHT*.7, 2);
+  tft.drawNumber(modmsw, SCREEN_WIDTH*.5, SCREEN_HEIGHT*.8, 2);
+  tft.drawString(" m", SCREEN_WIDTH*.75, SCREEN_HEIGHT*.8, 2);
   }
 }
 
@@ -156,7 +156,7 @@ void o2calibration() {
   tft.drawString("+++++++++++++", 0, SCREEN_HEIGHT*.80, 4);
   Serial.println("Calibration Screen Text");
 
-  //initADC();
+  initADC();
 
   Serial.println("Post ADS check statement");
   // get running average value from ADC input Pin
@@ -174,12 +174,12 @@ void o2calibration() {
 }
 
 void printLayout() {
-  tft.setTextColor(TFT_GREEN, TFT_BLACK);
-  tft.drawString("O2 %",SCREEN_WIDTH*.3, SCREEN_HEIGHT*.05, 4);
+  tft.setTextColor(TFT_DARKCYAN, TFT_BLACK);
+  tft.drawString("O2 %",SCREEN_WIDTH*.3, SCREEN_HEIGHT*.01, 4);
   tft.setTextColor(TFT_BLUE, TFT_BLACK);
-  tft.drawString("mV",SCREEN_WIDTH*.20, SCREEN_HEIGHT*.55, 2);
-  tft.setTextColor(TFT_ORANGE, TFT_BLACK);
-  tft.drawString("MOD",SCREEN_WIDTH*.60, SCREEN_HEIGHT*.55, 2);
+  tft.drawString("mV",SCREEN_WIDTH*.20, SCREEN_HEIGHT*.6, 2);
+  tft.setTextColor(TFT_OLIVE, TFT_BLACK);
+  tft.drawString("MOD",SCREEN_WIDTH*.60, SCREEN_HEIGHT*.6, 2);
 }
 
 
@@ -203,7 +203,6 @@ float initADC() {
   // Check that the ADC is operational
   if (!ads.begin()) {
     Serial.println("Failed to initialize ADS.");
-  //  tft.setTextSize(4);
     tft.setTextColor(TFT_RED);
     tft.drawString("Error", 0, 0, 2);
     tft.drawString("No Init", 0, 20, 2);

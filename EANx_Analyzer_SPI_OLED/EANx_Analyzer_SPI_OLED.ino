@@ -15,6 +15,9 @@
 #include <RunningAverage.h>
 #include <SPI.h>
 #include <Adafruit_GFX.h>     // Core graphics library
+#include <Fonts/FreeSans12pt7b.h>
+#include <Fonts/FreeSans18pt7b.h>
+#include <Fonts/FreeSans24pt7b.h>
 #include <Adafruit_ST7789.h>  // Hardware-specific library for ST7789
 #include <Adafruit_ADS1X15.h>
 #include <splash.h>
@@ -52,20 +55,21 @@ float multiplier = 0;
 void setup() {
   // initialize serial communication at 9600 bits per second:
   Serial.begin(9600);
-  ArduinoOTA.setHostname("EANxTinyPico");
-  setupOTA("EANxESPPico", mySSID, myPASSWORD);
+  ArduinoOTA.setHostname("EANxDevice");
+  setupOTA("EANxDevice", mySSID, myPASSWORD);
 
   initst7789();
-
-  Serial.println("Display Initialized");
-
+  
   tft.fillScreen(ST77XX_BLACK);
   testfillcircles(10, ST77XX_BLUE);
   testdrawcircles(10, ST77XX_WHITE);
   delay(500);
 
+  Serial.println("Display Initialized");  
+  tft.setCursor(0, SCREEN_HEIGHT*.2);
   tft.fillScreen(ST77XX_GREEN);
-  tft.setTextSize(4);
+  tft.setTextSize(1);
+  tft.setFont(&FreeSans18pt7b);
   tft.setTextColor(ST77XX_BLACK);
   Serial.println("init display test done");
   tft.println("display");
@@ -151,14 +155,11 @@ void o2calibration() {
   //display "Calibrating"
   tft.fillScreen(ST77XX_BLACK);
   tft.setTextColor(ST77XX_WHITE);
-  tft.setTextSize(4);
-  tft.setCursor(0, 10);
+  tft.setTextSize(1);
+  tft.setCursor(0,SCREEN_HEIGHT*.1);
   tft.println(F("++++++++++"));
   tft.println();
-  tft.setTextSize(3);
   tft.println(F("Calibrating"));
-  tft.println();
-  tft.setTextSize(4);
   tft.println(F("O2 Sensor"));
   tft.println();
   tft.println(F("++++++++++"));
@@ -182,68 +183,76 @@ void o2calibration() {
 }
 
 void printmod() {
-  tft.setCursor(130, 165);
-  tft.setTextSize(2);
+  tft.setCursor(SCREEN_WIDTH*.5, SCREEN_HEIGHT*.8);
+  tft.setFont(&FreeSans12pt7b);
+  tft.setTextSize(1);
   tft.setTextColor(ST77XX_YELLOW);
   tft.print(modfsw);
   tft.print(" FT");
-  tft.setCursor(140, 185);
+  tft.setCursor(SCREEN_WIDTH*.55, SCREEN_HEIGHT*.9);
   tft.print(modmsw);
   tft.println(" m");
 }
 
 void deletemod() {
-  tft.setCursor(130, 165);
-  tft.setTextSize(2);
+  tft.setCursor(SCREEN_WIDTH*.5, SCREEN_HEIGHT*.8);
+  tft.setFont(&FreeSans12pt7b);
+  tft.setTextSize(1);
   tft.setTextColor(ST77XX_BLACK);
   tft.print(prevmodfsw);
   tft.print(" FT");
-  tft.setCursor(140, 185);
+  tft.setCursor(SCREEN_WIDTH*.55, SCREEN_HEIGHT*.9);
   tft.print(prevmodmsw);
   tft.println(" m");
 }
 
 void printVoltage() {
-  tft.setCursor(30, 160);
-  tft.setTextSize(4);
+  tft.setCursor(SCREEN_WIDTH*.20, SCREEN_HEIGHT*.8);
+  tft.setTextSize(1);
+  tft.setFont(&FreeSans12pt7b);
   tft.setTextColor(ST77XX_RED);
   tft.println(voltage, 1);
 }
 
 void deleteVoltage() {
-  tft.setCursor(30, 160);
-  tft.setTextSize(4);
+  tft.setCursor(SCREEN_WIDTH*.20, SCREEN_HEIGHT*.8);
+  tft.setTextSize(1);
+  tft.setFont(&FreeSans12pt7b);
   tft.setTextColor(ST77XX_BLACK);
   tft.println(prevvoltage, 1);
 }
 
 void printo2() {
-  tft.setCursor(40, 50);
-  tft.setTextSize(6);
-  if (currentO2 > 20 and currentO2 < 22) { tft.setTextColor(ST77XX_CYAN); }
-  if (currentO2 < 20) { tft.setTextColor(ST77XX_RED); }
-  if (currentO2 > 22) { tft.setTextColor(ST77XX_GREEN); }
+  tft.setCursor(SCREEN_WIDTH*.15, SCREEN_HEIGHT*.5);
+  tft.setTextSize(2);
+  tft.setFont(&FreeSans24pt7b);
+  if (currentO2 > 20 and currentO2 < 22) { tft.setTextColor(ST77XX_CYAN, ST77XX_BLACK); }
+  if (currentO2 < 20) { tft.setTextColor(ST77XX_RED, ST77XX_BLACK); }
+  if (currentO2 > 22) { tft.setTextColor(ST77XX_GREEN, ST77XX_BLACK); }
   tft.println(currentO2, 1);
 }
 
 void deleteo2() {
-  tft.setCursor(40, 50);
-  tft.setTextSize(6);
+  tft.setCursor(SCREEN_WIDTH*.15, SCREEN_HEIGHT*.5);
+  tft.setTextSize(2);
+  tft.setFont(&FreeSans24pt7b);
   tft.setTextColor(ST77XX_BLACK);
   tft.println(prevO2, 1);
 }
 
 void printLayout() {
-  tft.setCursor(50, 5);
-  tft.setTextSize(4);
+  tft.setCursor(SCREEN_WIDTH*.35, SCREEN_HEIGHT*.15);
+  tft.setTextSize(1);
+  tft.setFont(&FreeSans24pt7b);
   tft.setTextColor(ST77XX_GREEN);
   tft.println("O2 %");
-  tft.setCursor(30, 120);
-  tft.setTextSize(4);
+  tft.setFont(&FreeSans18pt7b);
   tft.setTextColor(ST77XX_BLUE);
+  tft.setCursor(SCREEN_WIDTH*.15, SCREEN_HEIGHT*.7);
   tft.print("mV");
   tft.setTextColor(ST77XX_ORANGE);
-  tft.println("  MOD");
+  tft.setCursor(SCREEN_WIDTH*.5, SCREEN_HEIGHT*.7);
+  tft.println("MOD");
 }
 
 
@@ -275,7 +284,7 @@ float initADC() {
     Serial.println("Failed to initialize ADS.");
     tft.fillScreen(ST77XX_YELLOW);
     tft.setCursor(0, 30);
-    tft.setTextSize(4);
+    tft.setTextSize(2);
     tft.setTextColor(ST77XX_RED);
     tft.println(F("Error"));
     tft.println(F("No ADC"));
