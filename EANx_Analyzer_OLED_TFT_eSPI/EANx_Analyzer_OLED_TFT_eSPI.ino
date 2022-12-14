@@ -1,5 +1,3 @@
-
-
 /*****************************************************************************
 
   EANx Analysis with output to an OLED color display
@@ -22,12 +20,13 @@
 #include <splash.h>
 #include "pin_config.h"
 //#include "OTA.h"
-//#include "C:\Users\Brian E\Documents\Arduino\libraries\TFT_eSPI\User_Setup.h"  // Make sure you included YOUR specific user setup for TFT eSPI
+//#include "C:\Users\Brian E\Documents\Arduino\libraries\TFT_eSPI_Setups\User_Setup128x128.h" // Make sure you included YOUR specific user setup for TFT eSPI
+#include "C:\Users\Brian E\Documents\Arduino\libraries\TFT_eSPI\User_Setups\Setup7_ST7735_128x128BE.h"
 
 // ST1306 definitions
-#define SCREEN_WIDTH 170   // OLED display width, in pixels
-#define SCREEN_HEIGHT 300  // OLED display height, in pixels
-#define OLED_RESET -1      // Reset pin # (or -1 if sharing Arduino reset pin)
+#define SCREEN_WIDTH  128   // OLED display width, in pixels
+#define SCREEN_HEIGHT 128   // OLED display height, in pixels
+#define OLED_RESET    -1    // Reset pin # (or -1 if sharing Arduino reset pin)
 
 TFT_eSPI tft = TFT_eSPI(); 
 
@@ -51,7 +50,7 @@ float multiplier = 0;
 
 void setup() {
   // initialize serial communication at 9600 bits per second:
-  Serial.begin(115200);
+  //Serial.begin(115200);
   //ArduinoOTA.setHostname("EANxTinyPico");
   //setupOTA("EANxTinyPico", mySSID, myPASSWORD);
 
@@ -157,7 +156,7 @@ void o2calibration() {
   tft.drawString("+++++++++++++", 0, SCREEN_HEIGHT*.80, 4);
   Serial.println("Calibration Screen Text");
 
-  initADC();
+  //initADC();
 
   Serial.println("Post ADS check statement");
   // get running average value from ADC input Pin

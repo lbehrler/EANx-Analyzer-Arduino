@@ -19,7 +19,7 @@
 #include <Adafruit_ADS1X15.h>
 #include <splash.h>
 #include "pin_config.h"
-//#include "OTA.h"
+#include "OTA.h"
 
 // ST1306 definitions
 #define SCREEN_WIDTH 240   // OLED display width, in pixels
@@ -51,9 +51,9 @@ float multiplier = 0;
 
 void setup() {
   // initialize serial communication at 9600 bits per second:
-  Serial.begin(115200);
-  //ArduinoOTA.setHostname("EANxTinyPico");
-  //setupOTA("EANxTinyPico", mySSID, myPASSWORD);
+  Serial.begin(9600);
+  ArduinoOTA.setHostname("EANxTinyPico");
+  setupOTA("EANxESPPico", mySSID, myPASSWORD);
 
   initst7789();
 
@@ -100,7 +100,7 @@ void loop() {
   }
 
   // Record old and new ADC values
-  //ArduinoOTA.handle();
+  ArduinoOTA.handle();
   prevaveSensorValue = aveSensorValue;
   prevO2 = currentO2;
   prevvoltage = voltage;
@@ -273,11 +273,12 @@ float initADC() {
   // Check that the ADC is operational
   if (!ads.begin()) {
     Serial.println("Failed to initialize ADS.");
+    tft.fillScreen(ST77XX_YELLOW);
     tft.setCursor(0, 30);
     tft.setTextSize(4);
     tft.setTextColor(ST77XX_RED);
     tft.println(F("Error"));
-    tft.println(F("No Init"));
+    tft.println(F("No ADC"));
     while (1)
       ;
   }
