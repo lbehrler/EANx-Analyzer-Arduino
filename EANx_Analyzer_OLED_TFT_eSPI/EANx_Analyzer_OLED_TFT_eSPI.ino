@@ -18,11 +18,8 @@
 #include <TFT_eSPI.h>
 #include <Adafruit_ADS1X15.h>
 #include <splash.h>
-#include "OTA.h"
-#include "C:\Users\Brian E\Documents\Arduino\libraries\TFT_eSPI_Setups\User_Setup128x128.h" // Make sure you included YOUR specific user setup for TFT eSPI
-//#include "C:\Users\Brian E\Documents\Arduino\libraries\TFT_eSPI_Setups\User_Setup240x240ST7789.h" // 240x240 SS7789 TFT 
+//#include "OTA.h"
 #include "pin_config.h"
-
 
 // display definitions
 #define SCREEN_WIDTH  240   // OLED display width, in pixels
@@ -52,9 +49,10 @@ float multiplier = 0;
 void setup() {
   // initialize serial communication at 9600 bits per second:
   //Serial.begin(115200);
-  ArduinoOTA.setHostname("EANxESP32Pico");
-  setupOTA("EANxTinyPico", mySSID, myPASSWORD);
+  //ArduinoOTA.setHostname("EANxESP32Pico");
+  //setupOTA("EANxESP32Pico", mySSID, myPASSWORD);
 
+  //setup TFT
   tft.init();
   tft.setRotation(2);
   tft.fillScreen(TFT_BLACK);
@@ -102,7 +100,7 @@ void loop() {
   }
   delay(100); // slowing down loop a bit 
 
-  ArduinoOTA.handle();
+  //ArduinoOTA.handle();
   // Record old and new ADC values
   prevaveSensorValue = aveSensorValue;
   prevO2 = currentO2;
