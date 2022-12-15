@@ -64,11 +64,11 @@
 #else
   // For the breakout board, you can use any 2 or 3 pins.
   // These pins will also work for the 1.8" TFT shield.
-  #define TFT_SDA       18    
-  #define TFT_SCL       19
-  #define TFT_MOSI      7    // Data out
-  #define TFT_SCLK      5    // Clock out  #define 
+  #define TFT_SDA       5    
+  #define TFT_SCL       4
+  #define TFT_MOSI      13    // Data out
+  #define TFT_SCLK      14    // Clock out  #define 
   #define TFT_RST       -1    // Or set to -1 and connect to Arduino RESET pin                                            
-  #define TFT_DC        4
-  #define TFT_CS        10
+  #define TFT_DC        16
+  #define TFT_CS        15
 #endif
