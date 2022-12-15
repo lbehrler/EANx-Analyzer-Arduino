@@ -50,6 +50,8 @@ void setup() {
   ArduinoOTA.setHostname("EANxDevice");
   setupOTA("EANxDevice", mySSID, myPASSWORD);
 
+  Adafruit_ADS1115 ads;  // Define ADC - 16-bit version
+
   initst7789();
   
   tft.fillScreen(ST77XX_BLACK);

@@ -5,8 +5,6 @@
 
 Adafruit_ST7789 tft = Adafruit_ST7789(TFT_CS, TFT_DC, TFT_MOSI, TFT_SCLK, TFT_RST);  //Define OLED display
 
-Adafruit_ADS1115 ads;  // Define ADC - 16-bit version
-
 void initst7789() {
   tft.init(SCREEN_WIDTH, SCREEN_HEIGHT);  // Init ST7789 240x240
   tft.setRotation(1);                     // Adjust SS7789 Orientation
