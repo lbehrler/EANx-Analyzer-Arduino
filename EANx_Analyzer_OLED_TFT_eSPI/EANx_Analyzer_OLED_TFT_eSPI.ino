@@ -18,7 +18,7 @@
 #include <TFT_eSPI.h>
 #include <Adafruit_ADS1X15.h>
 #include <splash.h>
-//#include "OTA.h"
+#include "OTA.h"
 #include "pin_config.h"
 
 // display definitions
@@ -52,8 +52,10 @@ const int buttonPin=BUTTON_PIN; // push button
 void setup() {
   // initialize serial communication at 9600 bits per second:
   Serial.begin(9600);
-  //ArduinoOTA.setHostname("EANxESP32TTGO");
-  //setupOTA("EANxESP32TTGO", mySSID, myPASSWORD);
+
+  if (OTA != 0)  {
+  ArduinoOTA.setHostname("EANxESP32TTGO");
+  setupOTA("EANxESP32TTGO", mySSID, myPASSWORD);}
 
   pinMode(buttonPin,INPUT_PULLUP);  
 
@@ -111,7 +113,7 @@ void loop() {
   delay(100); // slowing down loop a bit 
 
   // OTA 
-  //ArduinoOTA.handle();
+ if (OTA != 0) {ArduinoOTA.handle();}
 
   // Record old and new ADC values
   prevaveSensorValue = aveSensorValue;
@@ -161,10 +163,10 @@ void o2calibration() {
   tft.fillScreen(TFT_BLACK);
   tft.setTextColor(TFT_WHITE);
   tft.setTextSize(1 * ResFact);
-  tft.drawString("+++++++++++++", 0, SCREEN_HEIGHT*.10, 4);
-  tft.drawString("Calibrating", 0, SCREEN_HEIGHT*.30, 4);
-  tft.drawString("O2 Sensor", 0, SCREEN_HEIGHT*.60, 4);
-  tft.drawString("+++++++++++++", 0, SCREEN_HEIGHT*.80, 4);
+  tft.drawString("+++++++++++++", 0, SCREEN_HEIGHT*.10, 2);
+  tft.drawString("Calibrating", 0, SCREEN_HEIGHT*.30, 2);
+  tft.drawString("O2 Sensor", 0, SCREEN_HEIGHT*.60, 2);
+  tft.drawString("+++++++++++++", 0, SCREEN_HEIGHT*.80, 2);
   Serial.println("Calibration Screen Text");
 
   initADC();
