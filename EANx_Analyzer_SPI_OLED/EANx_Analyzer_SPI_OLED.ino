@@ -46,12 +46,16 @@ int prevmodmsw = 0;
 float modppo = 1.4;
 float multiplier = 0;
 
+
+
 void setup() {
   // initialize serial communication at 9600 bits per second:
   Serial.begin(9600);
-//  ArduinoOTA.setHostname("EANxDevice");
-//  setupOTA("EANxDevice", mySSID, myPASSWORD);
-  
+
+  //if (OTA != 0)  {
+  //  ArduinoOTA.setHostname(OTADEVICE);
+  //  setupOTA(OTADEVICE, mySSID, myPASSWORD); }
+
   initst7789();
   
   tft.fillScreen(ST77XX_BLACK);
@@ -69,7 +73,8 @@ void setup() {
 
 // the loop routine runs over and over again forever:
 void loop() {
-
+  // OTA 
+  //if (OTA != 0) {ArduinoOTA.handle();}
   multiplier = initADC();
 
   // get running average value from ADC input Pin
@@ -83,7 +88,6 @@ void loop() {
   }
 
   // Record old and new ADC values
-  // ArduinoOTA.handle();
   prevaveSensorValue = aveSensorValue;
   prevO2 = currentO2;
   prevvoltage = voltage;
