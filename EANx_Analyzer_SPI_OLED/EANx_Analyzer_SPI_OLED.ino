@@ -23,11 +23,13 @@
 #include <splash.h>
 #include "pin_config.h"
 #include "display_cfg.h"
-#include "OTA.h"
+//#include "OTA.h"
 
 // Running Average definitions
 #define RA_SIZE 20           //Define running average pool size
 RunningAverage RA(RA_SIZE);  //Initialize Running Average
+
+Adafruit_ADS1115 ads;  // Define ADC - 16-bit version
 
 // Global Variabls
 float prevaveSensorValue = 0;
@@ -47,11 +49,9 @@ float multiplier = 0;
 void setup() {
   // initialize serial communication at 9600 bits per second:
   Serial.begin(9600);
-  ArduinoOTA.setHostname("EANxDevice");
-  setupOTA("EANxDevice", mySSID, myPASSWORD);
-
-  Adafruit_ADS1115 ads;  // Define ADC - 16-bit version
-
+//  ArduinoOTA.setHostname("EANxDevice");
+//  setupOTA("EANxDevice", mySSID, myPASSWORD);
+  
   initst7789();
   
   tft.fillScreen(ST77XX_BLACK);
@@ -72,10 +72,6 @@ void loop() {
 
   multiplier = initADC();
 
-  int16_t results;
-
-  results = ads.readADC_Differential_0_1();
-
   // get running average value from ADC input Pin
   RA.clear();
   for (int x = 0; x <= RA_SIZE; x++) {
@@ -87,7 +83,7 @@ void loop() {
   }
 
   // Record old and new ADC values
-  ArduinoOTA.handle();
+  // ArduinoOTA.handle();
   prevaveSensorValue = aveSensorValue;
   prevO2 = currentO2;
   prevvoltage = voltage;

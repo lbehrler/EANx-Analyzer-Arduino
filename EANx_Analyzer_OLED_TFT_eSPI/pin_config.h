@@ -17,6 +17,7 @@
   #define TFT_DC        6
   #define TFT_MOSI      10    // Data out
   #define TFT_SCLK      8     // Clock out
+  #define BUTTON_PIN    1
   #define ADCFACT       1024  
 
 #elif defined(ARDUINO_ESP32_PICO)
@@ -27,6 +28,7 @@
   #define TFT_RST       5     // Or set to -1 and connect to Arduino RESET pin                                            
   #define TFT_DC        10
   #define TFT_CS        9
+  #define BUTTON_PIN    2
   #define ADCFACT       4095 
 
 #elif defined(ARDUINO_AVR_NANO)
@@ -42,11 +44,23 @@
 #elif defined(ARDUINO_TINYS3)
   #define TFT_SDA       8    
   #define TFT_SCL       9
+  #define TFT_MISO      37
   #define TFT_MOSI      35    // Data out
   #define TFT_SCLK      36    // Clock out  #define 
   #define TFT_RST       -1    // Or set to -1 and connect to Arduino RESET pin                                            
   #define TFT_DC        3
   #define TFT_CS        34
+  #define TFT_BLK       2
+  #define ADCFACT       4095 
+
+#elif defined(ARDUINO_TTGO)
+  #define TFT_SDA       18    
+  #define TFT_SCL       19
+  #define TFT_MOSI      7    // Data out
+  #define TFT_SCLK      5    // Clock out  #define 
+  #define TFT_RST       -1    // Or set to -1 and connect to Arduino RESET pin                                            
+  #define TFT_DC        4
+  #define TFT_CS        10
   #define TFT_BLK       2
   #define ADCFACT       4095 
 
@@ -83,7 +97,7 @@
 #else
   // For the breakout board, you can use any 2 or 3 pins.
   // These pins will also work for the 1.8" TFT shield.
+  #define TFT_RST       -1    // Or set to -1 and connect to Arduino RESET pin                                            
+  #define TFT_DC        4
   #define TFT_CS        10
-  #define TFT_RST       9 // Or set to -1 and connect to Arduino RESET pin
-  #define TFT_DC        8
 #endif
