@@ -85,7 +85,7 @@ void setup() {
 
 
   o2calibration();
-//  safetyrule();
+  safetyrule();
   printLayout();
 }
 
@@ -96,7 +96,7 @@ void loop() {
   multiplier = initADC();
 
   int bstate = digitalRead(buttonPin);
-  Serial.println(bstate);
+  // Serial.println(bstate);
   if (bstate == LOW) {
     o2calibration();
     safetyrule();
