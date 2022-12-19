@@ -83,7 +83,7 @@ void loop() {
   aveSensorValue = RA.getAverage();
 
   currentO2 = (aveSensorValue * calFactor);  // Units: pct
-  if (aveSensorValue > 99.9) currentO2 = 99.9;
+  if (currentO2 > 99.9) currentO2 = 99.9;
 
   voltage = (aveSensorValue * multiplier);  // Units: mV
 
