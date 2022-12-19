@@ -20,13 +20,13 @@
 #include <Adafruit_ADS1X15.h>
 #include <splash.h>
 #include "pin_config.h"
-#include "OTA.h"
+//#include "OTA.h"
 
 // display definitions
-#define TFT_WIDTH  240   // OLED display width, in pixels
-#define TFT_HEIGHT 240   // OLED display height, in pixels
+#define TFT_WIDTH  128   // OLED display width, in pixels
+#define TFT_HEIGHT 128   // OLED display height, in pixels
 #define OLED_RESET    -1    // Reset pin # (or -1 if sharing Arduino reset pin)
-#define ResFact        2    // 1 = 128x128   2 = 240x240
+#define ResFact        1    // 1 = 128x128   2 = 240x240
 
 TFT_eSPI tft = TFT_eSPI();
 
@@ -54,8 +54,8 @@ void setup() {
   // initialize serial communication at 9600 bits per second:
   Serial.begin(9600);
 
-  ArduinoOTA.setHostname(OTADEVICE);
-  setupOTA(OTADEVICE, mySSID, myPASSWORD);
+  //ArduinoOTA.setHostname(OTADEVICE);
+  //setupOTA(OTADEVICE, mySSID, myPASSWORD);
 
   pinMode(buttonPin,INPUT_PULLUP);  
 
@@ -91,7 +91,8 @@ void setup() {
 
 // the loop routine runs over and over again forever:
 void loop() {
-  ArduinoOTA.handle();
+// Enable for OTA
+//  ArduinoOTA.handle();
 
   multiplier = initADC();
 
@@ -110,7 +111,7 @@ void loop() {
     sensorValue = ads.readADC_Differential_0_1();
     RA.addValue(sensorValue);
     delay(16);
-    // Serial.println(sensorValue);    //mV serial print for debugging
+    //Serial.println(sensorValue);    //mV serial print for debugging
   }
   delay(100); // slowing down loop a bit 
 
@@ -120,7 +121,7 @@ void loop() {
   aveSensorValue = RA.getAverage();
 
   currentO2 = (aveSensorValue * calFactor);  // Units: pct
-  if (aveSensorValue > 99.9) currentO2 = 99.9;
+  if (currentO2 > 99.9) currentO2 = 99.9;
 
   voltage = (aveSensorValue * multiplier);  // Units: mV
 
@@ -173,7 +174,7 @@ void o2calibration() {
   Serial.println("Post ADS check statement");
   // get running average value from ADC input Pin
   RA.clear();
-  for (int x = 0; x <= (RA_SIZE * 5); x++) {
+  for (int x = 0; x <= (RA_SIZE * 3); x++) {
     int sensorValue = 0;
     sensorValue = ads.readADC_Differential_0_1();
     RA.addValue(sensorValue);
@@ -183,6 +184,7 @@ void o2calibration() {
   }
   tft.fillScreen(TFT_BLACK);
   calFactor = (1 / RA.getAverage() * 20.900);  // Auto Calibrate to 20.9%
+  Serial.println(calFactor);
 }
 
 void printLayout() {
