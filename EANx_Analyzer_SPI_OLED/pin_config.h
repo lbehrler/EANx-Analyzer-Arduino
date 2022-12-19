@@ -75,17 +75,17 @@
   #define ADCFACT       4095 
 
 #elif defined(ARDUINO_TTGO)
-  #define TFT_SDA       18    
-  #define TFT_SCL       19
-  #define TFT_MOSI      7    // Data out
-  #define TFT_SCLK      5    // Clock out  #define 
+  #define SDA           18    
+  #define SCL           19
+  #define TFT_MOSI      6    // Data out
+  #define TFT_SCLK      7    // Clock out  #define 
   #define TFT_RST       -1    // Or set to -1 and connect to Arduino RESET pin                                            
-  #define TFT_DC        4
-  #define TFT_CS        10
+  #define TFT_DC        5
+  #define TFT_CS        4
   #define TFT_BLK       2
-  #define BUTTON_PIN    2
-  #define OTA           1
-  #define OTADEVICE     "TTGO_TOI_EANx"
+  #define BUTTON_PIN    10
+  #define OTACHK        1
+  #define OTADEVICE     "TTGOOI_EANx"
   #define ADCFACT       4095 
 
 #elif defined(ARDUINO_ESP32S3)
