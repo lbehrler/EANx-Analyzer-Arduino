@@ -20,7 +20,7 @@
   #define BUTTON_PIN    1
   #define OTACHK        0
   #define OTADEVICE     "SEEED_XIAO_EANx"
-  #define ADCFACT       1024  
+  #define ADCFACT       1024
 
 #elif defined(ARDUINO_XIAO_ESP32C3)  // Seeed XIAO ESP32 C3
   #define SDA       4     
@@ -33,7 +33,8 @@
   #define BUTTON_PIN    1
   #define OTACHK        1
   #define OTADEVICE     "XIAO_ESP32_EANx"
-  #define ADCFACT       1024  
+  #define ADCFACT       1024
+  #include "OTA.h"
 
 #elif defined(ARDUINO_ESP32_PICO)
   #define TFT_SDA       21     
@@ -46,7 +47,8 @@
   #define BUTTON_PIN    2
   #define OTACHK        1
   #define OTADEVICE     "ESP32_PICO_EANx"  
-  #define ADCFACT       4095 
+  #define ADCFACT       4095
+  #include "OTA.h"
 
 #elif defined(ARDUINO_AVR_NANO)
   #define TFT_SDA       23     
@@ -73,7 +75,8 @@
   #define BUTTON_PIN    2
   #define OTACHK        1
   #define OTADEVICE     "TINYS3_EANx"
-  #define ADCFACT       4095 
+  #define ADCFACT       4095
+  #include "OTA.h"
 
 #elif defined(ARDUINO_TTGO)
   #define SDA           18    
@@ -87,7 +90,8 @@
   #define BUTTON_PIN    10
   #define OTACHK        1
   #define OTADEVICE     "TTGOOI_EANx"
-  #define ADCFACT       4095 
+  #define ADCFACT       4095
+  #include "OTA.h"  
 
 #else
   // For the breakout board, you can use any 2 or 3 pins.

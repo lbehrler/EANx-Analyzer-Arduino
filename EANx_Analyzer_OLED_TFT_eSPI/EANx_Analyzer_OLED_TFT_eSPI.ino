@@ -20,13 +20,12 @@
 #include <Adafruit_ADS1X15.h>
 #include <splash.h>
 #include "pin_config.h"
-//#include "OTA.h"
+
 
 // display definitions
-#define TFT_WIDTH  128   // OLED display width, in pixels
-#define TFT_HEIGHT 128   // OLED display height, in pixels
-#define OLED_RESET    -1    // Reset pin # (or -1 if sharing Arduino reset pin)
-#define ResFact        1    // 1 = 128x128   2 = 240x240
+#define TFT_WIDTH  240   // OLED display width, in pixels
+#define TFT_HEIGHT 240   // OLED display height, in pixels
+#define ResFact        2    // 1 = 128x128   2 = 240x240
 
 TFT_eSPI tft = TFT_eSPI();
 
@@ -54,8 +53,9 @@ void setup() {
   // initialize serial communication at 9600 bits per second:
   Serial.begin(9600);
 
-  //ArduinoOTA.setHostname(OTADEVICE);
-  //setupOTA(OTADEVICE, mySSID, myPASSWORD);
+  if (OTACHK !=0) {
+    ArduinoOTA.setHostname(OTADEVICE);
+    setupOTA(OTADEVICE, mySSID, myPASSWORD);}
 
   pinMode(buttonPin,INPUT_PULLUP);  
 
@@ -82,8 +82,6 @@ void setup() {
   tft.fillScreen(TFT_BLACK);
 
   // setup display and calibrate unit
-
-
   o2calibration();
   safetyrule();
   printLayout();
@@ -91,8 +89,9 @@ void setup() {
 
 // the loop routine runs over and over again forever:
 void loop() {
+
 // Enable for OTA
-//  ArduinoOTA.handle();
+if (OTACHK !=0) { ArduinoOTA.handle();}
 
   multiplier = initADC();
 
@@ -163,10 +162,10 @@ void o2calibration() {
   tft.fillScreen(TFT_BLACK);
   tft.setTextColor(TFT_WHITE);
   tft.setTextSize(1 * ResFact);
-  tft.drawString("+++++++++++++", 0, TFT_HEIGHT*.10, 2);
-  tft.drawString("Calibrating", 0, TFT_HEIGHT*.30, 2);
-  tft.drawString("O2 Sensor", 0, TFT_HEIGHT*.60, 2);
-  tft.drawString("+++++++++++++", 0, TFT_HEIGHT*.80, 2);
+  tft.drawString("+++++++++++++", TFT_WIDTH*.1, TFT_HEIGHT*.10, 2);
+  tft.drawString("Calibrating", TFT_WIDTH*.1, TFT_HEIGHT*.30, 2);
+  tft.drawString("O2 Sensor", TFT_WIDTH*.1, TFT_HEIGHT*.60, 2);
+  tft.drawString("+++++++++++++", TFT_WIDTH*.1, TFT_HEIGHT*.80, 2);
   Serial.println("Calibration Screen Text");
 
   initADC();
@@ -180,11 +179,11 @@ void o2calibration() {
     RA.addValue(sensorValue);
     delay(16);
     Serial.print("calibrating ");
-    Serial.println(sensorValue);  //mV serial print for debugging
+    Serial.println(sensorValue);  //raw sensor serial print for debugging
   }
   tft.fillScreen(TFT_BLACK);
   calFactor = (1 / RA.getAverage() * 20.900);  // Auto Calibrate to 20.9%
-  Serial.println(calFactor);
+  // Serial.println(calFactor);  // average cal factor 
 }
 
 void printLayout() {
@@ -249,21 +248,22 @@ void safetyrule()  {
   tft.fillScreen(TFT_BLACK);
   tft.setTextColor(TFT_YELLOW);
   tft.setTextSize(1 * ResFact);
-  randomSeed(analogRead(2));
-  int randNumber = random(1,4);
-  if (randNumber == 1) {
+  randomSeed(millis());
+  int randNumber = random(5);
+  Serial.println(randNumber);
+  if (randNumber == 0) {
     tft.drawString("Seek proper", TFT_WIDTH*.0, TFT_HEIGHT*.10, 2);
     tft.drawString("training", TFT_WIDTH*.0, TFT_HEIGHT*.20, 2); }
-  else if (randNumber == 2){
+  else if (randNumber == 1){
     tft.drawString("Maintain a", TFT_WIDTH*.0, TFT_HEIGHT*.10, 2);
     tft.drawString("continious", TFT_WIDTH*.0, TFT_HEIGHT*.20, 2);
     tft.drawString("guideline to", TFT_WIDTH*.0, TFT_HEIGHT*.30, 2);
     tft.drawString("the surface", TFT_WIDTH*.0, TFT_HEIGHT*.40, 2); }
-  else if (randNumber == 3){
+  else if (randNumber == 2){
     tft.drawString("Stay within", TFT_WIDTH*.0, TFT_HEIGHT*.10, 2);
     tft.drawString("your depth", TFT_WIDTH*.0, TFT_HEIGHT*.20, 2);
     tft.drawString("limitations", TFT_WIDTH*.0, TFT_HEIGHT*.30, 2); }
-  else if (randNumber == 4){
+  else if (randNumber == 3){
     tft.drawString("Proper gas", TFT_WIDTH*.0, TFT_HEIGHT*.10, 2);
     tft.drawString("management", TFT_WIDTH*.0, TFT_HEIGHT*.20, 2); }
   else{

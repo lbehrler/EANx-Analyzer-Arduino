@@ -23,7 +23,6 @@
 #include <splash.h>
 #include "pin_config.h"
 #include "display_cfg.h"
-//#include "OTA.h"
 
 // Running Average definitions
 #define RA_SIZE 20           //Define running average pool size
@@ -52,9 +51,9 @@ void setup() {
   // initialize serial communication at 9600 bits per second:
   Serial.begin(9600);
 
-  //if (OTA != 0)  {
-  //  ArduinoOTA.setHostname(OTADEVICE);
-  //  setupOTA(OTADEVICE, mySSID, myPASSWORD); }
+  if (OTA != 0)  {
+    ArduinoOTA.setHostname(OTADEVICE);
+    setupOTA(OTADEVICE, mySSID, myPASSWORD); }
 
   initst7789();
   
@@ -73,8 +72,8 @@ void setup() {
 
 // the loop routine runs over and over again forever:
 void loop() {
-  // OTA 
-  //if (OTA != 0) {ArduinoOTA.handle();}
+  // Enable for OTA
+  if (OTACHK !=0) { ArduinoOTA.handle();}
   multiplier = initADC();
 
   // get running average value from ADC input Pin
@@ -291,26 +290,31 @@ void testdrawcircles(uint8_t radius, uint16_t color) {
 }
 
 void safetyrule()  {
-  tft.fillScreen(ST77XX_BLACK);
-  tft.setTextColor(ST77XX_YELLOW);
-  tft.setTextSize(1);
-  tft.setFont(&FreeSans12pt7b);
-  tft.setCursor(0,SCREEN_HEIGHT*.1);
-  randomSeed(analogRead(0));
-  int randNumber = random(1,4);
-  if (randNumber == 1) 
-    tft.print(F("Seek proper training"));
+  tft.fillScreen(TFT_BLACK);
+  tft.setTextColor(TFT_YELLOW);
+  tft.setTextSize(1 * ResFact);
+  randomSeed(millis());
+  int randNumber = random(5);
+  Serial.println(randNumber);
+  if (randNumber == 0) {
+    tft.drawString("Seek proper", TFT_WIDTH*.0, TFT_HEIGHT*.10, 2);
+    tft.drawString("training", TFT_WIDTH*.0, TFT_HEIGHT*.20, 2); }
+  else if (randNumber == 1){
+    tft.drawString("Maintain a", TFT_WIDTH*.0, TFT_HEIGHT*.10, 2);
+    tft.drawString("continious", TFT_WIDTH*.0, TFT_HEIGHT*.20, 2);
+    tft.drawString("guideline to", TFT_WIDTH*.0, TFT_HEIGHT*.30, 2);
+    tft.drawString("the surface", TFT_WIDTH*.0, TFT_HEIGHT*.40, 2); }
   else if (randNumber == 2){
-    tft.println(F("Maintain a continious")); 
-    tft.println(F("guideline to surface"));}
+    tft.drawString("Stay within", TFT_WIDTH*.0, TFT_HEIGHT*.10, 2);
+    tft.drawString("your depth", TFT_WIDTH*.0, TFT_HEIGHT*.20, 2);
+    tft.drawString("limitations", TFT_WIDTH*.0, TFT_HEIGHT*.30, 2); }
   else if (randNumber == 3){
-    tft.println(F("Stay within your")); 
-    tft.println(F("depth limitations"));}
-  else if (randNumber == 4)
-    tft.print(F("Proper gas management"));
+    tft.drawString("Proper gas", TFT_WIDTH*.0, TFT_HEIGHT*.10, 2);
+    tft.drawString("management", TFT_WIDTH*.0, TFT_HEIGHT*.20, 2); }
   else{
-    tft.println(F("Use appropriate")); 
-    tft.println(F("properly maintaned")); 
-    tft.println(F("equipment")); } 
-  delay (2000);
+    tft.drawString("Use appropriate", TFT_WIDTH*.0, TFT_HEIGHT*.10, 2);
+    tft.drawString("properly maintaned", TFT_WIDTH*.0, TFT_HEIGHT*.20, 2);
+    tft.drawString("equipment", TFT_WIDTH*.0, TFT_HEIGHT*.30, 2); }
+  delay (3000);
+  tft.fillScreen(TFT_BLACK);
 }
