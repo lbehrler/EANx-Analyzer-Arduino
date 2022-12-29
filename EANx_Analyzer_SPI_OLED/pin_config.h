@@ -82,12 +82,12 @@
   #define SDA           18    
   #define SCL           19
   #define TFT_MOSI      6    // Data out
-  #define TFT_SCLK      7    // Clock out  #define 
+  #define TFT_SCLK      4    // Clock out  #define 
   #define TFT_RST       -1    // Or set to -1 and connect to Arduino RESET pin                                            
-  #define TFT_DC        5
-  #define TFT_CS        4
-  #define TFT_BLK       2
-  #define BUTTON_PIN    10
+  #define TFT_DC        10
+  //#define TFT_CS        5
+  //#define TFT_BLK       7
+  #define BUTTON_PIN    9
   #define OTACHK        1
   #define OTADEVICE     "TTGOOI_EANx"
   #define ADCFACT       4095

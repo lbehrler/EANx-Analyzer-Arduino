@@ -14,7 +14,7 @@
 // Libraries
 #include <RunningAverage.h>
 #include <SPI.h>
-#include <Adafruit_GFX.h>     // Core graphics library
+#include <Adafruit_GFX.h>  // Core graphics library
 #include <Fonts/FreeSans12pt7b.h>
 #include <Fonts/FreeSans18pt7b.h>
 #include <Fonts/FreeSans24pt7b.h>
@@ -48,21 +48,21 @@ float multiplier = 0;
 
 
 void setup() {
-  // initialize serial communication at 9600 bits per second:
-  Serial.begin(9600);
+  Serial.begin(115200);
 
-  if (OTA != 0)  {
+  if (OTACHK != 0) {
     ArduinoOTA.setHostname(OTADEVICE);
-    setupOTA(OTADEVICE, mySSID, myPASSWORD); }
+    setupOTA(OTADEVICE, mySSID, myPASSWORD);
+  } 
 
   initst7789();
-  
+
   tft.fillScreen(ST77XX_BLACK);
   testfillcircles(10, ST77XX_BLUE);
   testdrawcircles(10, ST77XX_WHITE);
   delay(500);
 
-  safetyrule();
+//  safetyrule();
 
   // setup display and calibrate unit
 
@@ -73,7 +73,7 @@ void setup() {
 // the loop routine runs over and over again forever:
 void loop() {
   // Enable for OTA
-  if (OTACHK !=0) { ArduinoOTA.handle();}
+  if (OTACHK != 0) { ArduinoOTA.handle(); }
   multiplier = initADC();
 
   // get running average value from ADC input Pin
@@ -139,7 +139,7 @@ void o2calibration() {
   tft.setTextColor(ST77XX_WHITE);
   tft.setTextSize(1);
   tft.setFont(&FreeSans18pt7b);
-  tft.setCursor(0,SCREEN_HEIGHT*.1);
+  tft.setCursor(0, TFT_HEIGHT * .1);
   tft.println(F("++++++++++"));
   tft.println();
   tft.println(F("Calibrating"));
@@ -166,31 +166,31 @@ void o2calibration() {
 }
 
 void printmod() {
-  tft.setCursor(SCREEN_WIDTH*.5, SCREEN_HEIGHT*.8);
+  tft.setCursor(TFT_WIDTH * .5, TFT_HEIGHT * .8);
   tft.setFont(&FreeSans12pt7b);
   tft.setTextSize(1);
   tft.setTextColor(ST77XX_YELLOW);
   tft.print(modfsw);
   tft.print(" FT");
-  tft.setCursor(SCREEN_WIDTH*.55, SCREEN_HEIGHT*.9);
+  tft.setCursor(TFT_WIDTH * .55, TFT_HEIGHT * .9);
   tft.print(modmsw);
   tft.println(" m");
 }
 
 void deletemod() {
-  tft.setCursor(SCREEN_WIDTH*.5, SCREEN_HEIGHT*.8);
+  tft.setCursor(TFT_WIDTH * .5, TFT_HEIGHT * .8);
   tft.setFont(&FreeSans12pt7b);
   tft.setTextSize(1);
   tft.setTextColor(ST77XX_BLACK);
   tft.print(prevmodfsw);
   tft.print(" FT");
-  tft.setCursor(SCREEN_WIDTH*.55, SCREEN_HEIGHT*.9);
+  tft.setCursor(TFT_WIDTH * .55, TFT_HEIGHT * .9);
   tft.print(prevmodmsw);
   tft.println(" m");
 }
 
 void printVoltage() {
-  tft.setCursor(SCREEN_WIDTH*.20, SCREEN_HEIGHT*.8);
+  tft.setCursor(TFT_WIDTH * .20, TFT_HEIGHT * .8);
   tft.setTextSize(1);
   tft.setFont(&FreeSans12pt7b);
   tft.setTextColor(ST77XX_RED);
@@ -198,7 +198,7 @@ void printVoltage() {
 }
 
 void deleteVoltage() {
-  tft.setCursor(SCREEN_WIDTH*.20, SCREEN_HEIGHT*.8);
+  tft.setCursor(TFT_WIDTH * .20, TFT_HEIGHT * .8);
   tft.setTextSize(1);
   tft.setFont(&FreeSans12pt7b);
   tft.setTextColor(ST77XX_BLACK);
@@ -206,7 +206,7 @@ void deleteVoltage() {
 }
 
 void printo2() {
-  tft.setCursor(SCREEN_WIDTH*.15, SCREEN_HEIGHT*.5);
+  tft.setCursor(TFT_WIDTH * .15, TFT_HEIGHT * .5);
   tft.setTextSize(2);
   tft.setFont(&FreeSans24pt7b);
   if (currentO2 > 20 and currentO2 < 22) { tft.setTextColor(ST77XX_CYAN, ST77XX_BLACK); }
@@ -216,7 +216,7 @@ void printo2() {
 }
 
 void deleteo2() {
-  tft.setCursor(SCREEN_WIDTH*.15, SCREEN_HEIGHT*.5);
+  tft.setCursor(TFT_WIDTH * .15, TFT_HEIGHT * .5);
   tft.setTextSize(2);
   tft.setFont(&FreeSans24pt7b);
   tft.setTextColor(ST77XX_BLACK);
@@ -224,17 +224,17 @@ void deleteo2() {
 }
 
 void printLayout() {
-  tft.setCursor(SCREEN_WIDTH*.15, SCREEN_HEIGHT*.15);
+  tft.setCursor(TFT_WIDTH * .15, TFT_HEIGHT * .15);
   tft.setTextSize(1);
   tft.setFont(&FreeSans24pt7b);
   tft.setTextColor(ST77XX_GREEN);
   tft.println("O2 %");
   tft.setFont(&FreeSans18pt7b);
   tft.setTextColor(ST77XX_BLUE);
-  tft.setCursor(SCREEN_WIDTH*.15, SCREEN_HEIGHT*.7);
+  tft.setCursor(TFT_WIDTH * .15, TFT_HEIGHT * .7);
   tft.print("mV");
   tft.setTextColor(ST77XX_ORANGE);
-  tft.setCursor(SCREEN_WIDTH*.5, SCREEN_HEIGHT*.7);
+  tft.setCursor(TFT_WIDTH * .5, TFT_HEIGHT * .7);
   tft.println("MOD");
 }
 
@@ -289,32 +289,33 @@ void testdrawcircles(uint8_t radius, uint16_t color) {
   }
 }
 
-void safetyrule()  {
-  tft.fillScreen(TFT_BLACK);
-  tft.setTextColor(TFT_YELLOW);
+/* void safetyrule() {
+  tft.fillScreen(ST77XX_BLACK);
+  tft.setTextColor(ST77XX_YELLOW);
   tft.setTextSize(1 * ResFact);
   randomSeed(millis());
   int randNumber = random(5);
   Serial.println(randNumber);
   if (randNumber == 0) {
-    tft.drawString("Seek proper", TFT_WIDTH*.0, TFT_HEIGHT*.10, 2);
-    tft.drawString("training", TFT_WIDTH*.0, TFT_HEIGHT*.20, 2); }
-  else if (randNumber == 1){
-    tft.drawString("Maintain a", TFT_WIDTH*.0, TFT_HEIGHT*.10, 2);
-    tft.drawString("continious", TFT_WIDTH*.0, TFT_HEIGHT*.20, 2);
-    tft.drawString("guideline to", TFT_WIDTH*.0, TFT_HEIGHT*.30, 2);
-    tft.drawString("the surface", TFT_WIDTH*.0, TFT_HEIGHT*.40, 2); }
-  else if (randNumber == 2){
-    tft.drawString("Stay within", TFT_WIDTH*.0, TFT_HEIGHT*.10, 2);
-    tft.drawString("your depth", TFT_WIDTH*.0, TFT_HEIGHT*.20, 2);
-    tft.drawString("limitations", TFT_WIDTH*.0, TFT_HEIGHT*.30, 2); }
-  else if (randNumber == 3){
-    tft.drawString("Proper gas", TFT_WIDTH*.0, TFT_HEIGHT*.10, 2);
-    tft.drawString("management", TFT_WIDTH*.0, TFT_HEIGHT*.20, 2); }
-  else{
-    tft.drawString("Use appropriate", TFT_WIDTH*.0, TFT_HEIGHT*.10, 2);
-    tft.drawString("properly maintaned", TFT_WIDTH*.0, TFT_HEIGHT*.20, 2);
-    tft.drawString("equipment", TFT_WIDTH*.0, TFT_HEIGHT*.30, 2); }
-  delay (3000);
-  tft.fillScreen(TFT_BLACK);
-}
+    tft.drawString("Seek proper", TFT_WIDTH * .0, TFT_HEIGHT * .10, 2);
+    tft.drawString("training", TFT_WIDTH * .0, TFT_HEIGHT * .20, 2);
+  } else if (randNumber == 1) {
+    tft.drawString("Maintain a", TFT_WIDTH * .0, TFT_HEIGHT * .10, 2);
+    tft.drawString("continious", TFT_WIDTH * .0, TFT_HEIGHT * .20, 2);
+    tft.drawString("guideline to", TFT_WIDTH * .0, TFT_HEIGHT * .30, 2);
+    tft.drawString("the surface", TFT_WIDTH * .0, TFT_HEIGHT * .40, 2);
+  } else if (randNumber == 2) {
+    tft.drawString("Stay within", TFT_WIDTH * .0, TFT_HEIGHT * .10, 2);
+    tft.drawString("your depth", TFT_WIDTH * .0, TFT_HEIGHT * .20, 2);
+    tft.drawString("limitations", TFT_WIDTH * .0, TFT_HEIGHT * .30, 2);
+  } else if (randNumber == 3) {
+    tft.drawString("Proper gas", TFT_WIDTH * .0, TFT_HEIGHT * .10, 2);
+    tft.drawString("management", TFT_WIDTH * .0, TFT_HEIGHT * .20, 2);
+  } else {
+    tft.drawString("Use appropriate", TFT_WIDTH * .0, TFT_HEIGHT * .10, 2);
+    tft.drawString("properly maintaned", TFT_WIDTH * .0, TFT_HEIGHT * .20, 2);
+    tft.drawString("equipment", TFT_WIDTH * .0, TFT_HEIGHT * .30, 2);
+  }
+  delay(3000);
+  tft.fillScreen(ST77XX_BLACK);
+} */

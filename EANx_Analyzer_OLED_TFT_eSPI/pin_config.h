@@ -10,8 +10,8 @@
   #define TFT_DC         5
 
 #elif defined(SEEED_XIAO_M0)  // Seeed XIAO
-  #define SDA       4     
-  #define SCL       5
+  #define SDA           4     
+  #define SCL           5
   #define TFT_CS        7
   #define TFT_RST       -1     // Or set to -1 and connect to Arduino RESET pin
   #define TFT_DC        6
@@ -20,21 +20,20 @@
   #define BUTTON_PIN    1
   #define OTACHK        0
   #define OTADEVICE     "SEEED_XIAO_EANx"
-  #define ADCFACT       1024
 
 #elif defined(ARDUINO_XIAO_ESP32C3)  // Seeed XIAO ESP32 C3
-  #define SDA       4     
-  #define SCL       5
-  #define TFT_CS        7
-  #define TFT_RST       2     // Or set to -1 and connect to Arduino RESET pin
-  #define TFT_DC        6
+  #define SDA           6     
+  #define SCL           7
+  #define TFT_CS        5
+  #define TFT_DC        4
   #define TFT_MOSI      10    // Data out
   #define TFT_SCLK      8     // Clock out
-  #define BUTTON_PIN    1
+  #define TFT_RST       -1     // Or set to -1 and connect to Arduino RESET pin
+  #define BUTTON_PIN    3
   #define OTACHK        1
   #define OTADEVICE     "XIAO_ESP32_EANx"
-  #define ADCFACT       1024
   #include "OTA.h"
+//  #include "bat_stat.h"
 
 #elif defined(ARDUINO_ESP32_PICO)
   #define TFT_SDA       21     
@@ -47,7 +46,6 @@
   #define BUTTON_PIN    2
   #define OTACHK        1
   #define OTADEVICE     "ESP32_PICO_EANx"  
-  #define ADCFACT       4095
   #include "OTA.h"
 
 #elif defined(ARDUINO_AVR_NANO)
@@ -60,7 +58,6 @@
   #define TFT_CS        10
   #define BUTTON_PIN    2
   #define OTACHK        0
-  #define ADCFACT       4095 
 
 #elif defined(ARDUINO_TINYS3)
   #define TFT_SDA       8    
@@ -75,23 +72,22 @@
   #define BUTTON_PIN    2
   #define OTACHK        1
   #define OTADEVICE     "TINYS3_EANx"
-  #define ADCFACT       4095
   #include "OTA.h"
 
-#elif defined(ARDUINO_TTGO)
-  #define SDA           18    
-  #define SCL           19
+#elif defined(ARDUINO_TTGO)  //Lilygo OI
+  #define SDA           19    
+  #define SCL           18
   #define TFT_MOSI      6    // Data out
-  #define TFT_SCLK      7    // Clock out  #define 
+  #define TFT_SCLK      4    // Clock out  #define 
   #define TFT_RST       -1    // Or set to -1 and connect to Arduino RESET pin                                            
-  #define TFT_DC        5
-  #define TFT_CS        4
-  #define TFT_BLK       2
-  #define BUTTON_PIN    10
+  #define TFT_DC        10
+  //#define TFT_CS        5  //Unused MISO pin
+  #define TFT_BLK       7
+  #define BUTTON_PIN    9
   #define OTACHK        1
   #define OTADEVICE     "TTGOOI_EANx"
-  #define ADCFACT       4095
   #include "OTA.h"  
+  #include "bat_stat.h"
 
 #else
   // For the breakout board, you can use any 2 or 3 pins.
@@ -99,5 +95,5 @@
   #define TFT_RST       -1    // Or set to -1 and connect to Arduino RESET pin                                            
   #define TFT_DC        4
   #define TFT_CS        10
-  #define OTACHK      0
+  #define OTACHK        0
 #endif
