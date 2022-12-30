@@ -56,12 +56,13 @@ The [Arduino IDE 2.0 tutorial](https://docs.arduino.cc/software/ide-v2/tutorials
 Alternately you can use esptools.py, Platform I/O or any number of script / binary installation managers. 
 
 ## Configuration
-Depending on your hardware configuration and components used you will have to set your pin definitions in the header. 
+Depending on your hardware configuration and components used you will have to set your pin definitions in the header files. 
 
 ---More text coming soon---
 
 ## Revision History
 + 11/29/2022 - initial release
++ 12/30/2022 - prototype release
 
 ## Schematics 
 
@@ -70,3 +71,15 @@ Depending on your hardware configuration and components used you will have to se
 
 *Arduino Nano version with SPI OLED:*
 ![](https://github.com/lbehrler/EANx-Analyzer/blob/645330fc3275fe3a1c8c88061cc2e68e7b1bfda9/Nano_EANx_Analyzer_SPI_OLED%20schematic.png)
+
+## Prototype
+
+The current prototype unit is built using:
++ LilyGo-T-OI-PLUS [ESP32 C3 with 16340 Battery holder] https://github.com/Xinyuan-LilyGO/LilyGo-T-OI-PLUS
++ Generic ADS1115 
++ SPI Organic light-emitting diode (OLED) ST7789
++ O2 Sensor
++ 1/4 size Electro Cookie Proto Board PCB
++ Project case
+
+
