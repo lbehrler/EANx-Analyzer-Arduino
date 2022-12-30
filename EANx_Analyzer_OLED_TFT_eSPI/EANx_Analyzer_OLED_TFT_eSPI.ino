@@ -21,11 +21,10 @@
 #include <splash.h>
 #include "pin_config.h"
 
-
 // display definitions
 #define TFT_WIDTH  240   // OLED display width, in pixels
 #define TFT_HEIGHT 240   // OLED display height, in pixels
-#define ResFact        2    // 1 = 128x128   2 = 240x240
+#define ResFact       2    // 1 = 128x128   2 = 240x240
 
 TFT_eSPI tft = TFT_eSPI();
 
@@ -48,14 +47,15 @@ int modmsw = 0;
 float modppo = 1.4;
 float multiplier = 0;
 
+
 const int buttonPin=BUTTON_PIN; // push button
 
 void setup() {
   Serial.begin(115200);
 
-  if (OTACHK !=0) {
-    ArduinoOTA.setHostname(OTADEVICE);
-    setupOTA(OTADEVICE, mySSID, myPASSWORD);}
+ //OTA
+//ArduinoOTA.setHostname(OTADEVICE);
+//setupOTA(OTADEVICE, mySSID, myPASSWORD);}
 
   pinMode(buttonPin,INPUT_PULLUP);  
 
@@ -91,7 +91,7 @@ void setup() {
 void loop() {
 
 // Enable for OTA
-if (OTACHK !=0) { ArduinoOTA.handle();}
+// ArduinoOTA.handle();
 
   multiplier = initADC();
 
@@ -101,7 +101,6 @@ if (OTACHK !=0) { ArduinoOTA.handle();}
     o2calibration();
     safetyrule();
     printLayout(); }
-
 
   // get running average value from ADC input Pin
   RA.clear();
@@ -119,7 +118,6 @@ if (OTACHK !=0) { ArduinoOTA.handle();}
   prevO2 = currentO2;
   aveSensorValue = RA.getAverage();
 
-
   currentO2 = (aveSensorValue * calFactor);  // Units: pct
   if (currentO2 > 99.9) currentO2 = 99.9;
 
@@ -127,7 +125,6 @@ if (OTACHK !=0) { ArduinoOTA.handle();}
 
   modfsw = 33 * ((modppo / (currentO2 / 100)) - 1);
   modmsw = 10 * ((modppo / (currentO2 / 100)) - 1);
-
 
   // DEBUG print out the value you read:
   Serial.print("ADC Raw Diff = ");
@@ -145,9 +142,6 @@ if (OTACHK !=0) { ArduinoOTA.handle();}
   Serial.print(modfsw);
   Serial.println(" FT");
 
-    //Battery Check ESP based boards 
- //batVolts = (batStat() / 1000);
-
   if (prevO2 != currentO2) {
   if (currentO2 > 20 and currentO2 < 22) { tft.setTextColor(TFT_CYAN, TFT_BLACK); }
   if (currentO2 < 20) { tft.setTextColor(TFT_RED, TFT_BLACK); }
@@ -157,13 +151,22 @@ if (OTACHK !=0) { ArduinoOTA.handle();}
   tft.setTextSize(1 * ResFact);
   tft.drawFloat(currentO2, 1, TFT_WIDTH*.1, TFT_HEIGHT*.2, 7);
   tft.setTextColor(TFT_RED, TFT_BLACK);
-  tft.drawFloat(mVolts, 1, TFT_WIDTH*.1, TFT_HEIGHT*.72, 2);
-  tft.drawFloat(batVolts, 1, TFT_WIDTH*.1, TFT_HEIGHT*.85, 2);
+  String mv = String(mVolts, 1);
+  tft.setTextSize(1);
+  tft.drawString(String(mv + " mV  "), TFT_WIDTH*.1, TFT_HEIGHT*.72, 2);
+  //tft.drawFloat(mVolts, 1, TFT_WIDTH*.1, TFT_HEIGHT*.72, 2);
+  String bv = String(batVolts, 1);
+  tft.drawString(String(bv + " V  "), TFT_WIDTH*.1, TFT_HEIGHT*.83, 2);
+  tft.drawString(String(millis()/1000), TFT_WIDTH*.1, TFT_HEIGHT*.90, 2);
+  //tft.drawFloat(batVolts, 1, TFT_WIDTH*.1, TFT_HEIGHT*.85, 2);
   tft.setTextColor(TFT_YELLOW, TFT_BLACK);
-  tft.drawNumber(modfsw, TFT_WIDTH*.6, TFT_HEIGHT*.72, 2);
-  tft.drawString(" FT", TFT_WIDTH*.8, TFT_HEIGHT*.72, 2);
-  tft.drawNumber(modmsw, TFT_WIDTH*.6, TFT_HEIGHT*.85, 2);
-  tft.drawString(" m", TFT_WIDTH*.8, TFT_HEIGHT*.85, 2);
+  tft.setTextSize(1 * ResFact);
+  String modf = String(modfsw);
+  tft.drawString(String(modf + " FT  "), TFT_WIDTH*.6, TFT_HEIGHT*.72, 2);
+  //tft.drawString("FT", TFT_WIDTH*.8, TFT_HEIGHT*.72, 2);
+  String modm = String(modmsw);
+  tft.drawString(String(modm + " m  "), TFT_WIDTH*.6, TFT_HEIGHT*.83, 2);
+  //tft.drawString("m", TFT_WIDTH*.8, TFT_HEIGHT*.85, 2);
   }
 }
 
@@ -177,6 +180,8 @@ void o2calibration() {
   tft.drawString("O2 Sensor", TFT_WIDTH*.1, TFT_HEIGHT*.60, 2);
   tft.drawString("+++++++++++++", TFT_WIDTH*.1, TFT_HEIGHT*.80, 2);
   Serial.println("Calibration Screen Text");
+
+  batVolts = (batStat() / 1000)*BAT_ADJ; //Battery Check ESP based boards 
 
   initADC();
 
@@ -200,14 +205,12 @@ void o2calibration() {
 void printLayout() {
   tft.setTextSize(1 * ResFact);
   tft.setTextColor(TFT_MAGENTA, TFT_BLACK);
-  tft.drawString("O2 %",TFT_WIDTH*.3, TFT_HEIGHT*.01, 4);
+  tft.drawString("O2 %",TFT_WIDTH*.30, TFT_HEIGHT*.01, 4);
   tft.setTextColor(TFT_BLUE, TFT_BLACK);
-  tft.drawString("mV",TFT_WIDTH*.3, TFT_HEIGHT*.7, 2);
-  tft.drawString("V",TFT_WIDTH*.3, TFT_HEIGHT*.85, 2);
+  tft.drawString("Info",TFT_WIDTH*.10, TFT_HEIGHT*.6, 2);
   tft.setTextColor(TFT_GREEN, TFT_BLACK);
   tft.drawString("MOD",TFT_WIDTH*.60, TFT_HEIGHT*.6, 2);
 }
-
 
 float initADC() {
   // init ADC and Set gain

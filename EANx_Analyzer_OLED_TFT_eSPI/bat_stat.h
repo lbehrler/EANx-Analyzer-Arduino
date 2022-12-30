@@ -10,10 +10,8 @@
 float BatVoltage = 0.0;
 uint32_t readADC_Cal(int ADC_Raw);
 
-
 float batStat()
 {
-
     BatVoltage = (readADC_Cal(analogRead(BAT_ADC))) * 2;
     //Serial.printf("%.2fV", BatVoltage / 1000.0); // Print Voltage (in V)
     //Serial.println();

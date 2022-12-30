@@ -79,8 +79,8 @@
   #include "OTA.h"
 
 #elif defined(ARDUINO_TTGO)
-  #define SDA           18    
-  #define SCL           19
+  #define SDA           19    
+  #define SCL           18
   #define TFT_MOSI      6    // Data out
   #define TFT_SCLK      4    // Clock out  #define 
   #define TFT_RST       -1    // Or set to -1 and connect to Arduino RESET pin                                            
