@@ -70,7 +70,7 @@ Depending on your hardware configuration and components used you will have to se
 ![](https://github.com/lbehrler/EANx-Analyzer/blob/645330fc3275fe3a1c8c88061cc2e68e7b1bfda9/Seeed_Xiao_EANx_Analyzer_SPI_OLED%20schematic.png)
 
 *Arduino Nano version with SPI OLED:*
-![](https://github.com/lbehrler/EANx-Analyzer/blob/645330fc3275fe3a1c8c88061cc2e68e7b1bfda9/Nano_EANx_Analyzer_SPI_OLED%20schematic.png)
+![](https://github.com/lbehrler/EANx-Analyzer-Arduino/blob/main/Nano_EANx_Analyzer_SPI_OLED%20schematic.png)
 
 ## Prototype
 
@@ -83,7 +83,7 @@ The current prototype unit is built using:
 + Project case
 
 *Side View Prototype with SPI OLED*
-![](https://github.com/lbehrler/EANx-Analyzer/blob/645330fc3275fe3a1c8c88061cc2e68e7b1bfda9/PrototypeSideView.jpg)
+![](https://github.com/lbehrler/EANx-Analyzer-Arduino/blob/main/PrototypeSideView.jpg)
 
 *Operating Prototype*
-![](https://github.com/lbehrler/EANx-Analyzer/blob/645330fc3275fe3a1c8c88061cc2e68e7b1bfda9/PrototypeAssembled.jpg)
+![](https://github.com/lbehrler/EANx-Analyzer-Arduino/blob/main/PrototypeSideView.jpg)
