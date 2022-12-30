@@ -75,11 +75,15 @@ Depending on your hardware configuration and components used you will have to se
 ## Prototype
 
 The current prototype unit is built using:
-+ LilyGo-T-OI-PLUS [ESP32 C3 with 16340 Battery holder] https://github.com/Xinyuan-LilyGO/LilyGo-T-OI-PLUS
++ LilyGo-T-OI-PLUS [ESP32 C3 with 16340 Battery holder](https://github.com/Xinyuan-LilyGO/LilyGo-T-OI-PLUS)
 + Generic ADS1115 
 + SPI Organic light-emitting diode (OLED) ST7789
 + O2 Sensor
 + 1/4 size Electro Cookie Proto Board PCB
 + Project case
 
+*Side View Prototype with SPI OLED*
+![](https://github.com/lbehrler/EANx-Analyzer/blob/645330fc3275fe3a1c8c88061cc2e68e7b1bfda9/PrototypeSideView.jpg)
 
+*Operating Prototype*
+![](https://github.com/lbehrler/EANx-Analyzer/blob/645330fc3275fe3a1c8c88061cc2e68e7b1bfda9/PrototypeAssembled.jpg)
