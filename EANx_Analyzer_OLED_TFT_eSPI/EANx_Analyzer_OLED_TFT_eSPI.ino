@@ -75,9 +75,9 @@ void setup() {
   tft.setTextSize(1 * ResFact);
   tft.setTextColor(TFT_BLACK);
   Serial.println("init display test done");
-  tft.drawString("display", 0, 0, 4);
-  tft.drawString("init", 0, 30, 4);
-  tft.drawString("complete", 0, 60, 4);
+  tft.drawCentreString("display", TFT_WIDTH*.5, TFT_HEIGHT*0, 4);
+  tft.drawCentreString("init", TFT_WIDTH*.5, TFT_HEIGHT*0.3, 4);
+  tft.drawCentreString("complete", TFT_WIDTH*.5, TFT_HEIGHT*0.6, 4);
   delay(500);
   tft.fillScreen(TFT_BLACK);
 
@@ -157,7 +157,7 @@ void loop() {
   String bv = String(batVolts, 1);
   tft.drawString(String(bv + " V  "), TFT_WIDTH*.1, TFT_HEIGHT*.83, 2);
   tft.setTextSize(1);
-  tft.setTextColor(TFT_PURPLE, TFT_BLACK);
+  tft.setTextColor(TFT_BROWN, TFT_BLACK);
   tft.drawCentreString(String(millis()/1000), TFT_WIDTH*.5, TFT_HEIGHT*.90, 2);
   tft.setTextSize(1 * ResFact);  
   tft.setTextColor(TFT_YELLOW, TFT_BLACK);
@@ -173,10 +173,10 @@ void o2calibration() {
   tft.fillScreen(TFT_BLACK);
   tft.setTextColor(TFT_WHITE);
   tft.setTextSize(1 * ResFact);
-  tft.drawString("+++++++++++++", TFT_WIDTH*.1, TFT_HEIGHT*.10, 2);
-  tft.drawString("Calibrating", TFT_WIDTH*.1, TFT_HEIGHT*.30, 2);
-  tft.drawString("O2 Sensor", TFT_WIDTH*.1, TFT_HEIGHT*.60, 2);
-  tft.drawString("+++++++++++++", TFT_WIDTH*.1, TFT_HEIGHT*.80, 2);
+  tft.drawCentreString("+++++++++++++", TFT_WIDTH*.5, TFT_HEIGHT*.10, 2);
+  tft.drawCentreString("Calibrating", TFT_WIDTH*.5, TFT_HEIGHT*.30, 2);
+  tft.drawCentreString("O2 Sensor", TFT_WIDTH*.5, TFT_HEIGHT*.60, 2);
+  tft.drawCentreString("+++++++++++++", TFT_WIDTH*.5, TFT_HEIGHT*.80, 2);
   Serial.println("Calibration Screen Text");
 
   batVolts = (batStat() / 1000)*BAT_ADJ; //Battery Check ESP based boards 
@@ -233,8 +233,8 @@ float initADC() {
     tft.fillScreen(TFT_YELLOW);
     tft.setTextColor(TFT_RED);
     tft.setTextSize(1 * ResFact);
-    tft.drawString("Error", 0, 0, 4);
-    tft.drawString("No ADC", 0, 40, 4);
+    tft.drawCentreString("Error", TFT_WIDTH*.5, TFT_HEIGHT*0, 4);
+    tft.drawCentreString("No ADC", TFT_WIDTH*.5, TFT_HEIGHT*0.3, 4);
     delay(5000);
     while (1);  
   }

@@ -1,3 +1,4 @@
 
 EANx_Analyzer_OLED_TFT_eSPI/debug.cfg
 *.svd
+EANx_Analyzer_OLED_TFT_eSPI/debug_custom.json
