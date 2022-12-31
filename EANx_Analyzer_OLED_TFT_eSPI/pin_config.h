@@ -1,7 +1,7 @@
 /*
  *  Chip Specific settings to interface wiht OTA, battery status and LCD
  */ 
- 
+
 #if defined(ARDUINO_FEATHER_ESP32) // Feather Huzzah32
   #define TFT_CS         14
   #define TFT_RST        15
@@ -83,7 +83,6 @@
   /*  Traditional Pin Setup
   #define TFT_MOSI      6    // Data out
   #define TFT_SCLK      4    // Clock out  #define 
-  #define TFT_RST       -1    // Or set to -1 and connect to Arduino RESET pin                                            
   #define TFT_DC        10
   #define TFT_CS        5  //Unused MISO pin
   */
@@ -93,6 +92,7 @@
   #define TFT_DC        5
   #define TFT_MOSI      7    // Data out
   #define TFT_SCLK      10     // Clock out
+  
   #define TFT_RST       -1    // Or set to -1 and connect to Arduino RESET pin
 
   #define BUTTON_PIN    9

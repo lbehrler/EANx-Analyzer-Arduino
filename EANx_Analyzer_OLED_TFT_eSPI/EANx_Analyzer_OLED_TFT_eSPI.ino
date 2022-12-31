@@ -179,7 +179,9 @@ void o2calibration() {
   tft.drawCentreString("+++++++++++++", TFT_WIDTH*.5, TFT_HEIGHT*.80, 2);
   Serial.println("Calibration Screen Text");
 
-  batVolts = (batStat() / 1000)*BAT_ADJ; //Battery Check ESP based boards 
+  #ifdef ESP32 
+    batVolts = (batStat() / 1000)*BAT_ADJ;//Battery Check ESP based boards 
+  #endif
 
   initADC();
 
