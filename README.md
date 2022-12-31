@@ -58,7 +58,7 @@ Alternately you can use esptools.py, Platform I/O or any number of script / bina
 ## Configuration
 Depending on your hardware configuration and components used you will have to set your pin definitions in the header files. 
 
-If you are using a basic ST3%XX or ST13XX series display you can use [U8g2] (https://github.com/olikraus/u8g2) or the Adafruit librarires. For more advance display features and better efficiency the [Bodmer TFT eSPI library] (https://github.com/Bodmer/TFT_eSPI) can be configured allowing for greater options. If you are using the EANx Analyzer OLED TFT eSPI.ino then the TFT eSPI library is required. 
+If you are using a basic ST3%XX or ST13XX series display you can use [U8g2](https://github.com/olikraus/u8g2) or the Adafruit librarires. For more advance display features and better efficiency the [Bodmer TFT eSPI library](https://github.com/Bodmer/TFT_eSPI) can be configured allowing for greater options. If you are using the EANx Analyzer OLED TFT eSPI.ino then the TFT eSPI library is required. 
 
 ## Revision History
 + 11/29/2022 - initial release
