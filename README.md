@@ -39,9 +39,9 @@ The project folder contains several files and one folder:
 + `LICENSE` - The license file for this project
 + `readme.md` - This file.
 + `EANx_Analyzer_XXXXXXX.ino` - the basic application.
-+ 'pin_config.h' - Header file for various ESP32 / Arduino pinout settings. 
-+ 'OTA.h' - Simple OTA upate header (optional utility).
-+ 'bat_stat.h' - Simple Battery status script for ESP32 based boards.
++ `pin_config.h` - Header file for various ESP32 / Arduino pinout settings. 
++ `OTA.h` - Simple OTA upate header (optional utility).
++ `bat_stat.h` - Simple Battery status script for ESP32 based boards.
 
 ## Installation
 Installing the scripts onto your project chipset can be done using Arduino IDE 2.0
