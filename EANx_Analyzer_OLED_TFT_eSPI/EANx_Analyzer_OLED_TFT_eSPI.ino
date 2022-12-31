@@ -2,7 +2,7 @@
 
   EANx Analysis with output to an OLED color display
 
-  Reads an analog input on pin, converts it to voltage, grabs a running average 
+  Reads an analog input from an ADC, converts it to mV, and creates a running average 
   of ADC values and and prints the result to the display and debug to Serial Monitor.
 
   Based on prior EANx scripts: 
@@ -149,24 +149,22 @@ void loop() {
 
   // Draw Text -- Adjust these layouts to suit you LCD
   tft.setTextSize(1 * ResFact);
-  tft.drawFloat(currentO2, 1, TFT_WIDTH*.1, TFT_HEIGHT*.2, 7);
+  String o2 = String (currentO2, 1);
+  tft.drawCentreString(o2, TFT_WIDTH*.5, TFT_HEIGHT*.2, 7);
   tft.setTextColor(TFT_RED, TFT_BLACK);
   String mv = String(mVolts, 1);
-  tft.setTextSize(1);
   tft.drawString(String(mv + " mV  "), TFT_WIDTH*.1, TFT_HEIGHT*.72, 2);
-  //tft.drawFloat(mVolts, 1, TFT_WIDTH*.1, TFT_HEIGHT*.72, 2);
   String bv = String(batVolts, 1);
   tft.drawString(String(bv + " V  "), TFT_WIDTH*.1, TFT_HEIGHT*.83, 2);
-  tft.drawString(String(millis()/1000), TFT_WIDTH*.1, TFT_HEIGHT*.90, 2);
-  //tft.drawFloat(batVolts, 1, TFT_WIDTH*.1, TFT_HEIGHT*.85, 2);
+  tft.setTextSize(1);
+  tft.setTextColor(TFT_PURPLE, TFT_BLACK);
+  tft.drawCentreString(String(millis()/1000), TFT_WIDTH*.5, TFT_HEIGHT*.90, 2);
+  tft.setTextSize(1 * ResFact);  
   tft.setTextColor(TFT_YELLOW, TFT_BLACK);
-  tft.setTextSize(1 * ResFact);
   String modf = String(modfsw);
   tft.drawString(String(modf + " FT  "), TFT_WIDTH*.6, TFT_HEIGHT*.72, 2);
-  //tft.drawString("FT", TFT_WIDTH*.8, TFT_HEIGHT*.72, 2);
   String modm = String(modmsw);
   tft.drawString(String(modm + " m  "), TFT_WIDTH*.6, TFT_HEIGHT*.83, 2);
-  //tft.drawString("m", TFT_WIDTH*.8, TFT_HEIGHT*.85, 2);
   }
 }
 
@@ -205,7 +203,7 @@ void o2calibration() {
 void printLayout() {
   tft.setTextSize(1 * ResFact);
   tft.setTextColor(TFT_MAGENTA, TFT_BLACK);
-  tft.drawString("O2 %",TFT_WIDTH*.30, TFT_HEIGHT*.01, 4);
+  tft.drawCentreString("O2 %",TFT_WIDTH*.50, TFT_HEIGHT*.01, 4);
   tft.setTextColor(TFT_BLUE, TFT_BLACK);
   tft.drawString("Info",TFT_WIDTH*.10, TFT_HEIGHT*.6, 2);
   tft.setTextColor(TFT_GREEN, TFT_BLACK);
@@ -267,24 +265,24 @@ void safetyrule()  {
   int randNumber = random(5);
   Serial.println(randNumber);
   if (randNumber == 0) {
-    tft.drawString("Seek proper", TFT_WIDTH*.0, TFT_HEIGHT*.10, 2);
-    tft.drawString("training", TFT_WIDTH*.0, TFT_HEIGHT*.20, 2); }
+    tft.drawCentreString("Seek proper", TFT_WIDTH*.5, TFT_HEIGHT*.10, 2);
+    tft.drawCentreString("training", TFT_WIDTH*.5, TFT_HEIGHT*.20, 2); }
   else if (randNumber == 1){
-    tft.drawString("Maintain a", TFT_WIDTH*.0, TFT_HEIGHT*.10, 2);
-    tft.drawString("continious", TFT_WIDTH*.0, TFT_HEIGHT*.20, 2);
-    tft.drawString("guideline to", TFT_WIDTH*.0, TFT_HEIGHT*.30, 2);
-    tft.drawString("the surface", TFT_WIDTH*.0, TFT_HEIGHT*.40, 2); }
+    tft.drawCentreString("Maintain a", TFT_WIDTH*.5, TFT_HEIGHT*.10, 2);
+    tft.drawCentreString("continious", TFT_WIDTH*.5, TFT_HEIGHT*.20, 2);
+    tft.drawCentreString("guideline to", TFT_WIDTH*.5, TFT_HEIGHT*.30, 2);
+    tft.drawCentreString("the surface", TFT_WIDTH*.5, TFT_HEIGHT*.40, 2); }
   else if (randNumber == 2){
-    tft.drawString("Stay within", TFT_WIDTH*.0, TFT_HEIGHT*.10, 2);
-    tft.drawString("your depth", TFT_WIDTH*.0, TFT_HEIGHT*.20, 2);
-    tft.drawString("limitations", TFT_WIDTH*.0, TFT_HEIGHT*.30, 2); }
+    tft.drawCentreString("Stay within", TFT_WIDTH*.5, TFT_HEIGHT*.10, 2);
+    tft.drawCentreString("your depth", TFT_WIDTH*.5, TFT_HEIGHT*.20, 2);
+    tft.drawCentreString("limitations", TFT_WIDTH*.5, TFT_HEIGHT*.30, 2); }
   else if (randNumber == 3){
-    tft.drawString("Proper gas", TFT_WIDTH*.0, TFT_HEIGHT*.10, 2);
-    tft.drawString("management", TFT_WIDTH*.0, TFT_HEIGHT*.20, 2); }
+    tft.drawCentreString("Proper gas", TFT_WIDTH*.5, TFT_HEIGHT*.10, 2);
+    tft.drawCentreString("management", TFT_WIDTH*.5, TFT_HEIGHT*.20, 2); }
   else{
-    tft.drawString("Use appropriate", TFT_WIDTH*.0, TFT_HEIGHT*.10, 2);
-    tft.drawString("properly maintaned", TFT_WIDTH*.0, TFT_HEIGHT*.20, 2);
-    tft.drawString("equipment", TFT_WIDTH*.0, TFT_HEIGHT*.30, 2); }
+    tft.drawCentreString("Use appropriate", TFT_WIDTH*.5, TFT_HEIGHT*.10, 2);
+    tft.drawCentreString("properly maintaned", TFT_WIDTH*.5, TFT_HEIGHT*.20, 2);
+    tft.drawCentreString("equipment", TFT_WIDTH*.5, TFT_HEIGHT*.30, 2); }
   delay (3000);
   tft.fillScreen(TFT_BLACK);
 }

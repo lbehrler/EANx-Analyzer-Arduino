@@ -1,5 +1,5 @@
 /*
- *  battery voltage sketch for TTGO OI 
+ *  battery voltage sketch for TTGO OI / ESP32 and others
  */
 
 #include <Arduino.h>

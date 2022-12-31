@@ -1,4 +1,7 @@
-// Chip Specific settings for SPI OLED 
+/*
+ *  Chip Specific settings to interface wiht OTA, battery status and LCD
+ */ 
+ 
 #if defined(ARDUINO_FEATHER_ESP32) // Feather Huzzah32
   #define TFT_CS         14
   #define TFT_RST        15
@@ -44,10 +47,11 @@
   #define TFT_RST       5     // Or set to -1 and connect to Arduino RESET pin                                            
   #define TFT_DC        10
   #define TFT_CS        9
-  #define BUTTON_PIN    2
-  #define OTACHK        1
+  #define BUTTON_PIN    4
   #define OTADEVICE     "ESP32_PICO_EANx"  
-  #include "OTA.h"
+//  #include "OTA.h"
+  #include "bat_stat.h"
+  #define BAT_ADJ       1.0
 
 #elif defined(ARDUINO_AVR_NANO)
   #define TFT_SDA       23     
@@ -58,7 +62,6 @@
   #define TFT_DC        9
   #define TFT_CS        10
   #define BUTTON_PIN    2
-  #define OTACHK        0
 
 #elif defined(ARDUINO_TINYS3)
   #define TFT_SDA       8    
@@ -77,7 +80,7 @@
 #elif defined(ARDUINO_TTGO)  //Lilygo OI
   #define SDA           19    
   #define SCL           18
-  /*
+  /*  Traditional Pin Setup
   #define TFT_MOSI      6    // Data out
   #define TFT_SCLK      4    // Clock out  #define 
   #define TFT_RST       -1    // Or set to -1 and connect to Arduino RESET pin                                            
@@ -85,7 +88,7 @@
   #define TFT_CS        5  //Unused MISO pin
   */
 
-  // Straight Line PCB
+  // Straight Line PCB Setup
   #define TFT_CS        4
   #define TFT_DC        5
   #define TFT_MOSI      7    // Data out

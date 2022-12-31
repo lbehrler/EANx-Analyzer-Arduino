@@ -1,3 +1,10 @@
+/*****************************************************************************
+
+  Simple OTA script from 
+  https://github.com/SensorsIot/ESP32-OTA/tree/master/0TA_Template_Sketch
+
+*******************************************************************************/
+
 #ifdef ESP32
 #include <WiFi.h>
 #include <ESPmDNS.h>
