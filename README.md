@@ -83,7 +83,9 @@ The current prototype unit is built using:
 + Project case
 
 *Side View Prototype with SPI OLED*
+
 ![](https://github.com/lbehrler/EANx-Analyzer-Arduino/blob/main/PrototypeSideView.jpg)
 
 *Operating Prototype*
+
 ![](https://github.com/lbehrler/EANx-Analyzer-Arduino/blob/main/PrototypeAssembled.jpg)
