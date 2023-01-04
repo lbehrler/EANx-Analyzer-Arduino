@@ -20,11 +20,23 @@
 #include <Adafruit_ADS1X15.h>
 #include <splash.h>
 #include "pin_config.h"
+#include "version.h"
+
+//Debugging code 
+#define DEBUG 1
+
+#if DEBUG == 1
+  #define debug(x) Serial.print(x)
+  #define debugln(x) Serial.println(x)
+#else
+  #define debug(x)
+  #define debugln(x)
+#endif
 
 // display definitions
 #define TFT_WIDTH  240   // OLED display width, in pixels
 #define TFT_HEIGHT 240   // OLED display height, in pixels
-#define ResFact       2    // 1 = 128x128   2 = 240x240
+#define ResFact      2   // 1 = 128x128   2 = 240x240
 
 TFT_eSPI tft = TFT_eSPI();
 
@@ -46,16 +58,18 @@ int modfsw = 0;
 int modmsw = 0;
 float modppo = 1.4;
 float multiplier = 0;
-
+int msgid = 0;
 
 const int buttonPin=BUTTON_PIN; // push button
 
 void setup() {
   Serial.begin(115200);
-
- //OTA
-//ArduinoOTA.setHostname(OTADEVICE);
-//setupOTA(OTADEVICE, mySSID, myPASSWORD);}
+  // Call our validation to output the message (could be to screen / web page etc)
+  printVersionToSerial(); 
+ 
+  //OTA
+  //ArduinoOTA.setHostname(OTADEVICE);
+  //setupOTA(OTADEVICE, mySSID, myPASSWORD);}
 
   pinMode(buttonPin,INPUT_PULLUP);  
 
@@ -64,7 +78,7 @@ void setup() {
   tft.setRotation(0);
   tft.fillScreen(TFT_BLACK);
 
-  Serial.println("Display Initialized");
+  debugln("Display Initialized");
 
   tft.fillScreen(TFT_BLACK);
   testfillcircles(5, TFT_BLUE);
@@ -74,7 +88,7 @@ void setup() {
   tft.fillScreen(TFT_GREEN);
   tft.setTextSize(1 * ResFact);
   tft.setTextColor(TFT_BLACK);
-  Serial.println("init display test done");
+  debugln("init display test done");
   tft.drawCentreString("display", TFT_WIDTH*.5, TFT_HEIGHT*0, 4);
   tft.drawCentreString("init", TFT_WIDTH*.5, TFT_HEIGHT*0.3, 4);
   tft.drawCentreString("complete", TFT_WIDTH*.5, TFT_HEIGHT*0.6, 4);
@@ -85,6 +99,8 @@ void setup() {
   o2calibration();
   safetyrule();
   printLayout();
+  
+  debugln("Setup Complete");
 }
 
 // the loop routine runs over and over again forever:
@@ -96,7 +112,7 @@ void loop() {
   multiplier = initADC();
 
   int bstate = digitalRead(buttonPin);
-  // Serial.println(bstate);
+  // debugln(bstate);
   if (bstate == LOW) {
     o2calibration();
     safetyrule();
@@ -109,7 +125,7 @@ void loop() {
     sensorValue = ads.readADC_Differential_0_1();
     RA.addValue(sensorValue);
     delay(16);
-    //Serial.println(sensorValue);    //mV serial print for debugging
+    //debugln(sensorValue);    //mV serial print for debugging
   }
   delay(100); // slowing down loop a bit 
 
@@ -125,22 +141,26 @@ void loop() {
 
   modfsw = 33 * ((modppo / (currentO2 / 100)) - 1);
   modmsw = 10 * ((modppo / (currentO2 / 100)) - 1);
+  msgid++;
 
   // DEBUG print out the value you read:
-  Serial.print("ADC Raw Diff = ");
-  Serial.print(aveSensorValue);
-  Serial.print("  ");
-  Serial.print("Sensor mV = ");
-  Serial.print(mVolts);
-  Serial.print(" mV ");
-  Serial.print("Batt V = ");
-  Serial.print(batVolts);
-  Serial.print(" V ");
-  Serial.print("O2 = ");
-  Serial.print(currentO2);
-  Serial.print("% ");
-  Serial.print(modfsw);
-  Serial.println(" FT");
+  debug("Msg_ID:");
+  debug(msgid);
+  debug("\t");
+  debug("ADC:");
+  debug(aveSensorValue);
+  debug("\t");
+  debug("Sensor_mV:");
+  debug(mVolts);
+  debug("\t");
+  debug("Batt_V:");
+  debug(batVolts);
+  debug("\t");
+  debug("O2:");
+  debug(currentO2);
+  debug("\t");
+  debug("MOD:");
+  debugln(modfsw);
 
   if (prevO2 != currentO2) {
   if (currentO2 > 20 and currentO2 < 22) { tft.setTextColor(TFT_CYAN, TFT_BLACK); }
@@ -165,6 +185,10 @@ void loop() {
   tft.drawString(String(modf + " FT  "), TFT_WIDTH*.6, TFT_HEIGHT*.72, 2);
   String modm = String(modmsw);
   tft.drawString(String(modm + " m  "), TFT_WIDTH*.6, TFT_HEIGHT*.83, 2);
+
+  #ifdef ESP32 
+    batVolts = (batStat() / 1000)*BAT_ADJ; //Battery Check ESP based boards 
+  #endif
   }
 }
 
@@ -177,15 +201,11 @@ void o2calibration() {
   tft.drawCentreString("Calibrating", TFT_WIDTH*.5, TFT_HEIGHT*.30, 2);
   tft.drawCentreString("O2 Sensor", TFT_WIDTH*.5, TFT_HEIGHT*.60, 2);
   tft.drawCentreString("+++++++++++++", TFT_WIDTH*.5, TFT_HEIGHT*.80, 2);
-  Serial.println("Calibration Screen Text");
-
-  #ifdef ESP32 
-    batVolts = (batStat() / 1000)*BAT_ADJ;//Battery Check ESP based boards 
-  #endif
+  debugln("Calibration Screen Text");
 
   initADC();
 
-  Serial.println("Post ADS check statement");
+  debugln("Post ADS check statement");
   // get running average value from ADC input Pin
   RA.clear();
   for (int x = 0; x <= (RA_SIZE * 3); x++) {
@@ -193,12 +213,18 @@ void o2calibration() {
     sensorValue = ads.readADC_Differential_0_1();
     RA.addValue(sensorValue);
     delay(16);
-    Serial.print("calibrating ");
-    Serial.println(sensorValue);  //raw sensor serial print for debugging
+    // debug("calibrating ");
+    // debugln(sensorValue);  //raw sensor serial print for debugging
   }
+  debug("average calibration read "); 
+  debugln(RA.getAverage());  // average cal factor serial print for debugging
+
   tft.fillScreen(TFT_BLACK);
   calFactor = (1 / RA.getAverage() * 20.900);  // Auto Calibrate to 20.9%
-  // Serial.println(calFactor);  // average cal factor 
+  
+  debug("calibrated "); 
+  debugln(calFactor);  // average cal factor serial print for debugging
+
 }
 
 // Draw Layout -- Adjust this layouts to suit you LCD
@@ -231,7 +257,7 @@ float initADC() {
 
   // Check that the ADC is operational
   if (!ads.begin()) {
-    Serial.println("Failed to initialize ADS.");
+    debugln("Failed to initialize ADS.");
     tft.fillScreen(TFT_YELLOW);
     tft.setTextColor(TFT_RED);
     tft.setTextSize(1 * ResFact);
@@ -265,7 +291,6 @@ void safetyrule()  {
   tft.setTextSize(1 * ResFact);
   randomSeed(millis());
   int randNumber = random(5);
-  Serial.println(randNumber);
   if (randNumber == 0) {
     tft.drawCentreString("Seek proper", TFT_WIDTH*.5, TFT_HEIGHT*.10, 2);
     tft.drawCentreString("training", TFT_WIDTH*.5, TFT_HEIGHT*.20, 2); }
