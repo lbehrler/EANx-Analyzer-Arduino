@@ -23,7 +23,7 @@
 #include "version.h"
 
 //Debugging code
-#define DEBUG 0
+#define DEBUG 1
 
 #if DEBUG == 1
 #define debug(x) Serial.print(x)
@@ -46,7 +46,7 @@ Adafruit_ADS1115 ads;  // Define ADC - 16-bit version
 #define RA_SIZE 20           //Define running average pool size
 RunningAverage RA(RA_SIZE);  //Initialize Running Average
 
-// Global Variabls
+// Global Variables
 float prevaveSensorValue = 0;
 float aveSensorValue = 0;
 float mVolts = 0;

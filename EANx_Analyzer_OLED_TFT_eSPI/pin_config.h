@@ -21,7 +21,6 @@
   #define TFT_MOSI      10    // Data out
   #define TFT_SCLK      8     // Clock out
   #define BUTTON_PIN    1
-  #define OTADEVICE     "SEEED_XIAO_EANx"
   #define VAL_MCU       "Seeed Xiao M0"
 
 #elif defined(ARDUINO_XIAO_ESP32C3)  // Seeed XIAO ESP32 C3
@@ -33,8 +32,6 @@
   #define TFT_SCLK      8     // Clock out  
   #define TFT_RST       -1    // Or set to -1 and connect to Arduino RESET pin 
   #define BUTTON_PIN    3
-  #define OTACHK        0
-  #define OTADEVICE     "XIAO_ESP32_EANx"
   #define VAL_MCU       "Seeed Xiao ESP32 C3"
   #include "bat_stat.h"
   #define BAT_ADJ       0.85
@@ -48,7 +45,6 @@
   #define TFT_DC        10
   #define TFT_CS        9
   #define BUTTON_PIN    4
-  #define OTADEVICE     "ESP32_PICO_EANx"  
   #define VAL_MCU       "ESP32 Pico D4"
   #include "bat_stat.h"
   #define BAT_ADJ       1.0
@@ -74,7 +70,6 @@
   #define TFT_DC        3
   #define TFT_CS        34
   #define BUTTON_PIN    4
-  #define OTADEVICE     "TINYS3_EANx"
   #define VAL_MCU       "UM Tiny S3 ESP32"
   #include "bat_stat.h"
   #define BAT_ADJ       1.0
@@ -82,23 +77,22 @@
 #elif defined(ARDUINO_TTGO)  //Lilygo OI
   #define SDA           19    
   #define SCL           18
-  /*  Traditional Pin Setup
+  // Traditional Pin Setup
   #define TFT_MOSI      6    // Data out
   #define TFT_SCLK      4    // Clock out  #define 
   #define TFT_DC        10
   #define TFT_CS        5  //Unused MISO pin
-  */
 
-  // Hybrid Straight Line PCB Setup
+
+  /*// Hybrid Straight Line PCB Setup
   #define TFT_CS        4
   #define TFT_DC        5
-  #define TFT_MOSI      7    // Data out
-  #define TFT_SCLK      10     // Clock out
+  #define TFT_MOSI      6    // Data out
+  #define TFT_SCLK      10     // Clock out  */
   
   #define TFT_RST       -1    // Or set to -1 and connect to Arduino RESET pin
 
   #define BUTTON_PIN    9
-  #define OTADEVICE     "TTGOOI_EANx"
   #define VAL_MCU       "Lilygo T OI ESP32 C3"
   #include "bat_stat.h"
   #define BAT_ADJ       1.0
