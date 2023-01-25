@@ -1,6 +1,6 @@
 # EANx-Analyzer-Arduino / ESP32 
 
-> **Note:**: If you have an issue with this project, please review your hardware docuemntation first.  If you are still having an issue or have a software specific issue, please open an issue [here](https://github.com/lbehrler/EANx-Analyzer/issues).
+> **Note:** If you have an issue with this project, please review your hardware docuemntation first.  If you are still having an issue or have a software specific issue, please open an issue [here](https://github.com/lbehrler/EANx-Analyzer/issues).
 
 EANx Analysis with output to an OLED color display.
 The code can be customized to match a wide variety of hardware.  The current version in the main branch is setup to use an ESP32-Pico-D4, a Seeeduino Xiao, or an Arduino Nano with an SPI interface OLED screen 240 x 240.
@@ -9,7 +9,8 @@ In its simplest form the EANx Analyzer reads an analog input from an ADS1115, co
 
 The EANx Analyzer project is meant to be a DIY O2 Analyzer.  
 
-##Disclaimers
+## Disclaimers
+
 **Using or monitoring oxygen levels above atmospheric composition (20.9%) can be hazardous. While oxygen is not combustible or explosive, its presence accelerates and promotes combustion. High levels of oxygen will make most materials combustible including metals. Do not use oxygen levels above 20.9% in the presence of any flame or ignition source.**
 
 **Use at your own risk.  Inaccurate gas analysis can lead to serious personal injury or death.**  
