@@ -8,10 +8,13 @@ The code can be customized to match a wide variety of hardware.  The current ver
 In its simplest form the EANx Analyzer reads an analog input from an ADS1115, converts it to voltage, grabs a running average of ADC values and and prints the result to the display and debug to Serial Monitor.
 
 The EANx Analyzer project is meant to be a DIY O2 Analyzer.  
- 
+
+##Disclaimers
 **Using or monitoring oxygen levels above atmospheric composition (20.9%) can be hazardous. While oxygen is not combustible or explosive, its presence accelerates and promotes combustion. High levels of oxygen will make most materials combustible including metals. Do not use oxygen levels above 20.9% in the presence of any flame or ignition source.**
 
-**Use at your own risk.**  If you are using the device and software for critical purposes, please seek proper training and know the limits of devices of this type. 
+**Use at your own risk.  Inaccurate gas analysis can lead to serious personal injury or death.**  
+
+If you are using the device and software for critical purposes, please seek proper training and know the limits of devices of this type. 
 
 ## Acknowledgements
 Some of this code is adapted from other EANx project scripts: 
