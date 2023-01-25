@@ -9,6 +9,8 @@ In its simplest form the EANx Analyzer reads an analog input from an ADS1115, co
 
 The EANx Analyzer project is meant to be a DIY O2 Analyzer.  
  
+**Using or monitoring oxygen levels above atmospheric composition (20.9%) can be hazardous. While oxygen is not combustible or explosive, its presence accelerates and promotes combustion. High levels of oxygen will make most materials combustible including metals. Do not use oxygen levels above 20.9% in the presence of any flame or ignition source.**
+
 **Use at your own risk.**  If you are using the device and software for critical purposes, please seek proper training and know the limits of devices of this type. 
 
 ## Acknowledgements
