@@ -92,6 +92,10 @@ The current prototype unit is built using:
 
 ![](https://github.com/lbehrler/EANx-Analyzer-Arduino/blob/main/PrototypeSideView.jpg)
 
-*Operating Prototype*
+*Prototype 2 on Protoboard*
 
 ![](https://github.com/lbehrler/EANx-Analyzer-Arduino/blob/main/PrototypeAssembled.jpg)
+
+*Prototype 3 with Custom PCB*
+
+![](https://github.com/lbehrler/EANx-Analyzer-Arduino/blob/main/ProtoCustomPCB.jpg)
