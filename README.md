@@ -88,16 +88,14 @@ The current prototype unit is built using:
 
 ![](https://github.com/lbehrler/EANx-Analyzer-Arduino/blob/main/PrototypeSideView.jpg)
 
-*Prototype 2 in project case*
+*Prototypes*
 
-![](https://github.com/lbehrler/EANx-Analyzer-Arduino/blob/main/PrototypeAssembled.jpg)
+![Protoboard version](https://github.com/lbehrler/EANx-Analyzer-Arduino/blob/main/PrototypeAssembled.jpg)
 
-*Custom PCB Top*
-![](https://github.com/lbehrler/EANx-Analyzer-Arduino/blob/main/TTGO%20Hat%20PCB%20Top.png)
+*Custom PCB*
 
-*Custom PCB Bottom*
-![](https://github.com/lbehrler/EANx-Analyzer-Arduino/blob/main/TTGO%20Hat%20PCB%20Bottom.png)
+<img src="https://github.com/lbehrler/EANx-Analyzer-Arduino/blob/main/TTGO%20Hat%20PCB%20Top.png" height="400">  <img src="https://github.com/lbehrler/EANx-Analyzer-Arduino/blob/main/TTGO%20Hat%20PCB%20Bottom.png" height="400">
 
-*Prototype 3 with Custom PCB*
+*Prototype 3*
 
-![](https://github.com/lbehrler/EANx-Analyzer-Arduino/blob/main/ProtoCustomPCB.jpg)
+![Custom PCB version](https://github.com/lbehrler/EANx-Analyzer-Arduino/blob/main/ProtoCustomPCB.jpg)
