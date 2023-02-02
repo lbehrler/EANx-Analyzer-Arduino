@@ -50,16 +50,11 @@ The project folder contains several files and one folder:
 + `bat_stat.h` - Simple Battery status script for ESP32 based boards.
 
 ## Installation
-Installing the scripts onto your project chipset can be done using Arduino IDE 2.0
-
-### Arduino IDE Requirements
-- Windows - Win 10 and newer, 64 bits
-- Linux - 64 bits
-- Mac OS X - Version 10.14: "Mojave" or newer, 64 bits
+Installing the scripts onto your project chipset can be done using Arduino IDE 2.0 or Platform IO
 
 The [Arduino IDE 2.0 tutorial](https://docs.arduino.cc/software/ide-v2/tutorials/getting-started/ide-v2-downloading-and-installing)
 
-Alternately you can use esptools.py, Platform I/O or any number of script / binary installation managers. 
+Alternately you can use esptools.py, Platform IO or any number of script / binary installation managers. 
 
 ## Configuration
 Depending on your hardware configuration and components used you will have to set your pin definitions in the header files. 
@@ -69,6 +64,7 @@ If you are using a basic ST3%XX or ST13XX series display you can use [U8g2](http
 ## Revision History
 + 11/29/2022 - initial release
 + 12/30/2022 - prototype release
++ 01/03/2023 - custom PCB prototype release
 
 ## Schematics 
 
@@ -92,6 +88,14 @@ The current prototype unit is built using:
 
 ![](https://github.com/lbehrler/EANx-Analyzer-Arduino/blob/main/PrototypeSideView.jpg)
 
-*Operating Prototype*
+*Prototypes*
 
-![](https://github.com/lbehrler/EANx-Analyzer-Arduino/blob/main/PrototypeAssembled.jpg)
+![Protoboard version](https://github.com/lbehrler/EANx-Analyzer-Arduino/blob/main/PrototypeAssembled.jpg)
+
+*Custom PCB*
+
+<img src="https://github.com/lbehrler/EANx-Analyzer-Arduino/blob/main/TTGO%20Hat%20PCB%20Top.png" height="400">  <img src="https://github.com/lbehrler/EANx-Analyzer-Arduino/blob/main/TTGO%20Hat%20PCB%20Bottom.png" height="400">
+
+*Prototype 3*
+
+![Custom PCB version](https://github.com/lbehrler/EANx-Analyzer-Arduino/blob/main/ProtoCustomPCB.jpg)
