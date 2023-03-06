@@ -94,7 +94,7 @@ The current prototype unit is built using:
 
 *Custom PCB*
 
-<img src="https://github.com/lbehrler/EANx-Analyzer-Arduino/blob/main/TTGO%20Hat%20PCB%20Top.png" height="400">  <img src="https://github.com/lbehrler/EANx-Analyzer-Arduino/blob/main/TTGO%20Hat%20PCB%20Bottom.png" height="400">
+<img src="https://github.com/lbehrler/EANx-Analyzer-Arduino/blob/main/Wikifiles/TTGO%20Small%20Hat%20PCB%20Top.png" height="400">  <img src="https://github.com/lbehrler/EANx-Analyzer-Arduino/blob/main/Wikifiles/TTGO%20Small%20Hat%20PCB%20Bottom.png" height="400">
 
 *Prototype 3*
 
