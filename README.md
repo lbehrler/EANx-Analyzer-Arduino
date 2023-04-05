@@ -15,7 +15,7 @@ The EANx Analyzer project is meant to be a DIY O2 Analyzer.
 
 **Use at your own risk.  Inaccurate gas analysis can lead to serious personal injury or death.**  
 
-If you are using the device and software for critical purposes, please seek proper training and know the limits of devices of this type. 
+If you are using the device and software for critical purposes, please seek proper training and know the limits of devices of this type. By using this analyzer to analyze breathing gas, you assume all risks for the use of analyzed gas and the risk from any inferences made from the output of the device, both above and below the water.
 
 ## Acknowledgements
 Some of this code is adapted from other EANx project scripts: 
