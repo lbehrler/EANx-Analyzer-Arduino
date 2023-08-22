@@ -65,6 +65,7 @@ If you are using a basic ST3%XX or ST13XX series display you can use [U8g2](http
 + 11/29/2022 - initial release
 + 12/30/2022 - prototype release
 + 01/03/2023 - custom PCB prototype release
++ 07/30/2023 - Rev 3 Custom PCB
 
 ## Schematics 
 
